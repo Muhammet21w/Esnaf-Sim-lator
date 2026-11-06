@@ -545,6 +545,58 @@
       .garage-section {
         margin-top: 20px;
       }
+      .garage-toolbar {
+        display: grid;
+        grid-template-columns: minmax(180px, 1.5fr) repeat(
+            2,
+            minmax(150px, 0.8fr)
+          );
+        gap: 8px;
+        margin-bottom: 12px;
+        padding: 10px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #18221ce8;
+      }
+      .garage-toolbar .input {
+        min-width: 0;
+        margin: 0;
+      }
+      .vehicle-facts {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 7px;
+        margin: 10px 0;
+      }
+      .vehicle-facts span {
+        padding: 7px 8px;
+        border-radius: 5px;
+        background: #11181580;
+        color: var(--muted);
+        font-size: 10px;
+      }
+      .vehicle-facts b {
+        display: block;
+        margin-top: 3px;
+        color: var(--text);
+        font-size: 12px;
+      }
+      .vehicle-credit {
+        display: block;
+        margin-top: 9px;
+        color: var(--muted);
+        font-size: 9px;
+        text-decoration: underline;
+        text-underline-offset: 2px;
+      }
+      .vehicle-credit:hover {
+        color: var(--gold);
+      }
+      .garage-count {
+        margin: 0 0 10px;
+        color: var(--muted);
+        font-size: 11px;
+      }
       .vehicle-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(min(100%, 285px), 1fr));
@@ -682,6 +734,12 @@
         .bottom button {
           flex: 0 0 auto;
         }
+        .garage-toolbar {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .garage-toolbar input {
+          grid-column: 1 / -1;
+        }
       }
       @media (max-width: 520px) {
         .hud {
@@ -707,6 +765,12 @@
         .vehicle-owned .vehicle-photo {
           aspect-ratio: 16 / 10;
           min-height: 0;
+        }
+        .garage-toolbar {
+          grid-template-columns: 1fr;
+        }
+        .garage-toolbar input {
+          grid-column: auto;
         }
       }
       @media (prefers-reduced-motion: reduce) {
@@ -1002,6 +1066,16 @@
               username,
               email: username,
             };
+            S.vehicles = (Array.isArray(S.vehicles) ? S.vehicles : []).map(
+              (vehicle) => {
+                const catalogVehicle = garageCatalog.find(
+                  (item) => item.id === vehicle.id,
+                );
+                return catalogVehicle
+                  ? { ...vehicle, ...catalogVehicle }
+                  : vehicle;
+              },
+            );
             let elapsedOffline = Math.floor(
               (now() - (S.lastTick || now())) / 1000,
             );
@@ -1048,8 +1122,17 @@
               }
               totalPassive +=
                 S.properties.reduce((acc, p) => acc + p.rent, 0) * offlineDays;
-              totalPassive +=
-                S.vehicles.reduce((acc, v) => acc + v.rent, 0) * offlineDays;
+              const vehicleIncome =
+                S.vehicles.reduce((acc, vehicle) => acc + vehicle.rent, 0) *
+                offlineDays;
+              const vehicleMaintenance =
+                S.vehicles.reduce(
+                  (acc, vehicle) => acc + (vehicle.maintenance || 0),
+                  0,
+                ) * offlineDays;
+              const vehicleTax = Math.round(vehicleIncome * 0.12);
+              totalPassive += vehicleIncome - vehicleMaintenance - vehicleTax;
+              S.taxDebt += vehicleTax;
               if (S.bankDeposit > 0) {
                 let interestEarned = Math.round(
                   S.bankDeposit * 0.005 * offlineDays,
@@ -1217,12 +1300,46 @@
         {
           id: "courier",
           name: "Moto Kurye",
-          time: 40,
-          pay: 2200,
-          xp: 35,
-          energy: 20,
+          time: 60,
+          pay: 1500,
+          xp: 25,
+          energy: 18,
           level: 2,
           repReq: 15,
+          vehicleType: "Motosiklet",
+        },
+        {
+          id: "van_delivery",
+          name: "Şehir İçi Kamyonet Dağıtımı",
+          time: 100,
+          pay: 3000,
+          xp: 45,
+          energy: 22,
+          level: 4,
+          repReq: 35,
+          vehicleType: "Kamyonet",
+        },
+        {
+          id: "truck_freight",
+          name: "Bölgesel Kamyon Yükü",
+          time: 180,
+          pay: 5200,
+          xp: 75,
+          energy: 35,
+          level: 7,
+          repReq: 85,
+          vehicleType: "Kamyon",
+        },
+        {
+          id: "semi_logistics",
+          name: "Uluslararası TIR Lojistiği",
+          time: 300,
+          pay: 9500,
+          xp: 145,
+          energy: 55,
+          level: 10,
+          repReq: 160,
+          vehicleType: "TIR",
         },
         {
           id: "clerk",
@@ -1583,38 +1700,481 @@
           daily: 120000,
         },
       ];
-      const garageCatalog = [
-        {
-          id: "car_sedan",
-          name: "Şehir Sedan Otomobil",
-          type: "Sedan",
+      const vehiclePhotos = {
+        Motosiklet: {
+          image:
+            "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/40/Motorcycle_parked_on_the_side_of_the_street.jpg/960px-Motorcycle_parked_on_the_side_of_the_street.jpg",
+          imageAlt: "Park halindeki şehir motosikleti, temsilî fotoğraf",
+          photoCredit: "mycurrency.com · CC BY-SA 4.0",
+          photoHref:
+            "https://commons.wikimedia.org/wiki/File:Motorcycle_parked_on_the_side_of_the_street.jpg",
+        },
+        Sedan: {
           image:
             "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=960&q=85",
-          imageAlt: "Siyah lüks sedan şehir yolunda",
-          price: 450000,
-          rent: 8500,
+          imageAlt: "Koyu renkli sedan, temsilî fotoğraf",
+          photoCredit: "Unsplash",
+          photoHref: "https://unsplash.com/",
         },
-        {
-          id: "car_suv",
-          name: "Lüks SUV Araç",
-          type: "SUV",
+        SUV: {
           image:
             "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=960&q=85",
-          imageAlt: "Beyaz SUV dağlık arazide",
-          price: 2100000,
-          rent: 42000,
+          imageAlt: "SUV arazi aracı, temsilî fotoğraf",
+          photoCredit: "Unsplash",
+          photoHref: "https://unsplash.com/",
         },
-        {
-          id: "car_sport",
-          name: "Spor Yarış Arabası",
-          type: "Spor",
+        Spor: {
           image:
             "https://images.unsplash.com/photo-1525609004556-c46c7d6cf023?auto=format&fit=crop&w=960&q=85",
-          imageAlt: "Turuncu spor otomobil orman yolunda",
-          price: 7500000,
-          rent: 160000,
+          imageAlt: "Turuncu spor otomobil, temsilî fotoğraf",
+          photoCredit: "Unsplash",
+          photoHref: "https://unsplash.com/",
         },
-      ];
+        Kamyonet: {
+          image:
+            "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/00/Ford_E-Transit_Custom_%282023%29_DSC_9252.jpg/960px-Ford_E-Transit_Custom_%282023%29_DSC_9252.jpg",
+          imageAlt: "Ford E-Transit Custom elektrikli van",
+          photoCredit: "Alexander Migl · CC BY-SA 4.0",
+          photoHref:
+            "https://commons.wikimedia.org/wiki/File:Ford_E-Transit_Custom_(2023)_DSC_9252.jpg",
+        },
+        Kamyon: {
+          image:
+            "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7c/CSIRO_ScienceImage_3497_Truck_on_highway_rural_NSW.jpg/960px-CSIRO_ScienceImage_3497_Truck_on_highway_rural_NSW.jpg",
+          imageAlt: "Yük kamyonu kırsal otoyolda",
+          photoCredit: "Carl Davies / CSIRO · CC BY 3.0",
+          photoHref:
+            "https://commons.wikimedia.org/wiki/File:CSIRO_ScienceImage_3497_Truck_on_highway_rural_NSW.jpg",
+        },
+        TIR: {
+          image:
+            "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7c/CSIRO_ScienceImage_3497_Truck_on_highway_rural_NSW.jpg/960px-CSIRO_ScienceImage_3497_Truck_on_highway_rural_NSW.jpg",
+          imageAlt: "Yarı römorklu TIR kırsal otoyolda",
+          photoCredit: "Carl Davies / CSIRO · CC BY 3.0",
+          photoHref:
+            "https://commons.wikimedia.org/wiki/File:CSIRO_ScienceImage_3497_Truck_on_highway_rural_NSW.jpg",
+        },
+      };
+      const garageCatalog = [
+        [
+          "moto_activa",
+          "Honda Activa 110",
+          "Motosiklet",
+          2019,
+          42000,
+          80000,
+          100,
+          65,
+        ],
+        [
+          "moto_address",
+          "Suzuki Address 125",
+          "Motosiklet",
+          2020,
+          36000,
+          105000,
+          125,
+          80,
+        ],
+        [
+          "moto_nmax",
+          "Yamaha NMAX 155",
+          "Motosiklet",
+          2021,
+          29000,
+          140000,
+          170,
+          105,
+        ],
+        [
+          "moto_pcx",
+          "Honda PCX 160",
+          "Motosiklet",
+          2022,
+          22000,
+          175000,
+          210,
+          135,
+        ],
+        [
+          "moto_pulsar",
+          "Bajaj Pulsar NS200",
+          "Motosiklet",
+          2021,
+          26000,
+          230000,
+          265,
+          175,
+        ],
+        [
+          "moto_duke",
+          "KTM Duke 250",
+          "Motosiklet",
+          2022,
+          18000,
+          320000,
+          340,
+          230,
+        ],
+        [
+          "moto_classic",
+          "Royal Enfield Classic 350",
+          "Motosiklet",
+          2023,
+          12000,
+          390000,
+          390,
+          260,
+        ],
+        [
+          "moto_versys",
+          "Kawasaki Versys-X 300",
+          "Motosiklet",
+          2021,
+          24000,
+          600000,
+          520,
+          360,
+        ],
+        [
+          "moto_cb500",
+          "Honda CB500X",
+          "Motosiklet",
+          2023,
+          11000,
+          780000,
+          650,
+          450,
+        ],
+        [
+          "moto_mt07",
+          "Yamaha MT-07",
+          "Motosiklet",
+          2024,
+          7000,
+          990000,
+          780,
+          560,
+        ],
+        [
+          "car_clio",
+          "Renault Clio 1.0",
+          "Sedan",
+          2018,
+          92000,
+          1150000,
+          1250,
+          760,
+        ],
+        [
+          "car_sedan",
+          "Toyota Corolla 1.6",
+          "Sedan",
+          2019,
+          78000,
+          1350000,
+          1450,
+          900,
+        ],
+        [
+          "car_elantra",
+          "Hyundai Elantra 1.6",
+          "Sedan",
+          2020,
+          64000,
+          1650000,
+          1700,
+          1080,
+        ],
+        [
+          "car_civic",
+          "Honda Civic 1.5",
+          "Sedan",
+          2020,
+          59000,
+          1950000,
+          1950,
+          1280,
+        ],
+        [
+          "car_octavia",
+          "Skoda Octavia 1.5",
+          "Sedan",
+          2021,
+          52000,
+          2400000,
+          2300,
+          1540,
+        ],
+        [
+          "car_508",
+          "Peugeot 508 1.6",
+          "Sedan",
+          2021,
+          49000,
+          2900000,
+          2700,
+          1850,
+        ],
+        [
+          "car_c180",
+          "Mercedes-Benz C 180",
+          "Sedan",
+          2019,
+          67000,
+          3900000,
+          3500,
+          2450,
+        ],
+        ["car_320i", "BMW 320i", "Sedan", 2020, 54000, 4300000, 3800, 2700],
+        [
+          "car_suv",
+          "Hyundai Tucson 1.6",
+          "SUV",
+          2020,
+          62000,
+          4100000,
+          3650,
+          2550,
+        ],
+        [
+          "suv_sportage",
+          "Kia Sportage 1.6",
+          "SUV",
+          2021,
+          51000,
+          4550000,
+          3950,
+          2800,
+        ],
+        [
+          "suv_rav4",
+          "Toyota RAV4 Hybrid",
+          "SUV",
+          2021,
+          47000,
+          5400000,
+          4700,
+          3350,
+        ],
+        ["suv_xc60", "Volvo XC60", "SUV", 2020, 56000, 7200000, 5900, 4300],
+        ["suv_x3", "BMW X3", "SUV", 2021, 48000, 8200000, 6500, 4850],
+        ["sport_mx5", "Mazda MX-5", "Spor", 2019, 36000, 3500000, 3450, 2450],
+        [
+          "sport_mustang",
+          "Ford Mustang GT",
+          "Spor",
+          2019,
+          33000,
+          7900000,
+          7200,
+          5200,
+        ],
+        [
+          "car_sport",
+          "Porsche 911 Carrera",
+          "Spor",
+          2020,
+          24000,
+          18000000,
+          14500,
+          10800,
+        ],
+        [
+          "sport_m4",
+          "BMW M4 Competition",
+          "Spor",
+          2022,
+          16000,
+          13500000,
+          11200,
+          8200,
+        ],
+        [
+          "van_fiorino",
+          "Fiat Fiorino 1.3",
+          "Kamyonet",
+          2019,
+          105000,
+          1350000,
+          4200,
+          3050,
+        ],
+        [
+          "van_kangoo",
+          "Renault Kangoo",
+          "Kamyonet",
+          2020,
+          89000,
+          1700000,
+          5000,
+          3650,
+        ],
+        [
+          "van_caddy",
+          "Volkswagen Caddy",
+          "Kamyonet",
+          2020,
+          76000,
+          2200000,
+          6200,
+          4450,
+        ],
+        [
+          "van_transit",
+          "Ford E-Transit Custom",
+          "Kamyonet",
+          2023,
+          18000,
+          3800000,
+          10500,
+          7600,
+        ],
+        [
+          "van_ducato",
+          "Fiat Ducato Maxi",
+          "Kamyonet",
+          2021,
+          68000,
+          4300000,
+          12800,
+          9200,
+        ],
+        [
+          "van_sprinter",
+          "Mercedes-Benz Sprinter",
+          "Kamyonet",
+          2021,
+          61000,
+          5400000,
+          15500,
+          11200,
+        ],
+        [
+          "van_crafter",
+          "Volkswagen Crafter",
+          "Kamyonet",
+          2022,
+          44000,
+          5900000,
+          16800,
+          12100,
+        ],
+        [
+          "truck_npr",
+          "Isuzu NPR 3.5T",
+          "Kamyon",
+          2018,
+          180000,
+          3100000,
+          11500,
+          8200,
+        ],
+        [
+          "truck_canter",
+          "Mitsubishi Fuso Canter",
+          "Kamyon",
+          2019,
+          150000,
+          3600000,
+          13000,
+          9400,
+        ],
+        [
+          "truck_cargo",
+          "Ford Cargo 1833",
+          "Kamyon",
+          2020,
+          130000,
+          6200000,
+          20500,
+          15000,
+        ],
+        [
+          "truck_atego",
+          "Mercedes-Benz Atego",
+          "Kamyon",
+          2020,
+          118000,
+          8400000,
+          26500,
+          19400,
+        ],
+        [
+          "truck_fm",
+          "Volvo FM 420",
+          "Kamyon",
+          2021,
+          92000,
+          12800000,
+          35000,
+          25800,
+        ],
+        [
+          "truck_scania",
+          "Scania P 320",
+          "Kamyon",
+          2022,
+          78000,
+          14900000,
+          39500,
+          29400,
+        ],
+        [
+          "tir_volvo",
+          "Volvo FH 500",
+          "TIR",
+          2020,
+          620000,
+          18000000,
+          50000,
+          35500,
+        ],
+        [
+          "tir_scania",
+          "Scania R 450",
+          "TIR",
+          2021,
+          540000,
+          19800000,
+          55000,
+          39200,
+        ],
+        [
+          "tir_actros",
+          "Mercedes-Benz Actros 1848",
+          "TIR",
+          2021,
+          490000,
+          22000000,
+          61000,
+          43800,
+        ],
+        [
+          "tir_tgx",
+          "MAN TGX 20.510",
+          "TIR",
+          2022,
+          410000,
+          24500000,
+          67000,
+          48200,
+        ],
+        ["tir_daf", "DAF XF 480", "TIR", 2023, 320000, 26800000, 72000, 52000],
+      ]
+        .map(([id, name, type, year, km, price, rent, maintenance]) => ({
+          id,
+          name,
+          type,
+          year,
+          km,
+          price,
+          rent,
+          maintenance,
+          ...vehiclePhotos[type],
+        }))
+        .sort((first, second) => first.price - second.price);
+      let garageFilters = { search: "", type: "Tümü", sort: "asc" };
       const propertyCatalog = [
         {
           id: "prop_daire",
@@ -1908,8 +2468,15 @@
           jobs
             .map((j) => {
               let activeJob = S.activeJobs[j.id];
-              let locked = S.level < j.level || S.rep < j.repReq;
-              return `<div class="item"> <div class="row"> <div> <h4>${j.name} ${locked ? "🔒" : ""}</h4> <p>Maaş: <b class="green">${money(j.pay)}</b> • Süre: ${fmtTime(j.time)} • Enerji: ${j.energy}</p> <p class="small muted">Gereksinim: Min Seviye ${j.level} • Min İtibar: ${j.repReq} Puan</p> </div> <button ${activeJob || locked ? "disabled" : ""} onclick="startJob('${j.id}')">${activeJob ? fmtTime(activeJob.rem) : locked ? "Kilitli" : "İşe Başla"}</button> </div> </div>`;
+              let vehicleMissing =
+                j.vehicleType &&
+                !S.vehicles.some((vehicle) => vehicle.type === j.vehicleType);
+              let locked =
+                S.level < j.level || S.rep < j.repReq || vehicleMissing;
+              let requirement = vehicleMissing
+                ? `Gerekli araç: ${j.vehicleType}`
+                : `Min Seviye ${j.level} • Min İtibar ${j.repReq} Puan`;
+              return `<div class="item"> <div class="row"> <div> <h4>${j.name} ${locked ? "🔒" : ""}</h4> <p>Kazanç: <b class="green">${money(j.pay)}</b> • Süre: ${fmtTime(j.time)} • Enerji: ${j.energy}</p> <p class="small muted">${requirement}</p> </div> <button ${activeJob || locked ? "disabled" : ""} onclick="startJob('${j.id}')">${activeJob ? fmtTime(activeJob.rem) : vehicleMissing ? "Araç Gerekli" : locked ? "Kilitli" : "İşe Başla"}</button> </div> </div>`;
             })
             .join("") +
           "</div>"
@@ -2146,6 +2713,66 @@
           "</div>"
         );
       }
+      function vehicleCardView(vehicle, ownedIndex = -1) {
+        const owned = ownedIndex >= 0;
+        const action = owned
+          ? `<button class="danger vehicle-buy" onclick="sellVehicle(${ownedIndex})">Aracı Sat · %75</button>`
+          : `<button class="success vehicle-buy" onclick="buyVehicle('${vehicle.id}')">🚗 Satın Al</button>`;
+        return `<article class="vehicle-card${owned ? " vehicle-owned" : ""}">
+          <div class="vehicle-photo"><img src="${vehicle.image}" alt="${escapeHtml(vehicle.imageAlt)}" loading="lazy" decoding="async"><span class="vehicle-class">${vehicle.type}</span></div>
+          <div class="vehicle-info">
+            <h3>${escapeHtml(vehicle.name)}</h3>
+            <span class="vehicle-price">${money(vehicle.price)}</span>
+            <div class="vehicle-facts"><span>Model yılı<b>${vehicle.year}</b></span><span>Kilometre<b>${Number(vehicle.km).toLocaleString("tr-TR")} km</b></span></div>
+            <div class="vehicle-meta"><span>Günlük kira</span><strong>${money(vehicle.rent)}</strong></div>
+            <div class="vehicle-meta"><span>Bakım / gün</span><strong class="gold">${money(vehicle.maintenance)}</strong></div>
+            ${action}
+            <a class="vehicle-credit" href="${vehicle.photoHref}" target="_blank" rel="noopener noreferrer">Fotoğraf: ${escapeHtml(vehicle.photoCredit)}</a>
+          </div>
+        </article>`;
+      }
+      function garageListingsView() {
+        const query = garageFilters.search.trim().toLocaleLowerCase("tr-TR");
+        const filteredVehicles = garageCatalog
+          .filter((vehicle) => {
+            const matchesType =
+              garageFilters.type === "Tümü" ||
+              vehicle.type === garageFilters.type;
+            const searchable =
+              `${vehicle.name} ${vehicle.type}`.toLocaleLowerCase("tr-TR");
+            return matchesType && searchable.includes(query);
+          })
+          .sort((first, second) =>
+            garageFilters.sort === "desc"
+              ? second.price - first.price
+              : first.price - second.price,
+          );
+        if (!filteredVehicles.length)
+          return `<div class="garage-empty"><span>🔎</span><h3>İlan bulunamadı</h3><p>Arama veya araç türü filtresini değiştir.</p></div>`;
+        return filteredVehicles
+          .map((vehicle) => vehicleCardView(vehicle))
+          .join("");
+      }
+      function filterGarage() {
+        garageFilters.search = $("garageSearch").value;
+        garageFilters.type = $("garageType").value;
+        garageFilters.sort = $("garageSort").value;
+        const visibleCount = garageCatalog.filter((vehicle) => {
+          const matchesType =
+            garageFilters.type === "Tümü" ||
+            vehicle.type === garageFilters.type;
+          const searchable =
+            `${vehicle.name} ${vehicle.type}`.toLocaleLowerCase("tr-TR");
+          return (
+            matchesType &&
+            searchable.includes(
+              garageFilters.search.trim().toLocaleLowerCase("tr-TR"),
+            )
+          );
+        }).length;
+        $("garageResults").textContent = `${visibleCount} araç listeleniyor`;
+        $("garageListings").innerHTML = garageListingsView();
+      }
       function garageView() {
         const ownedVehicles = S.vehicles.length
           ? S.vehicles
@@ -2153,48 +2780,44 @@
                 const catalogVehicle = garageCatalog.find(
                   (item) => item.id === vehicle.id,
                 );
-                const image = catalogVehicle?.image || garageCatalog[0].image;
-                const imageAlt =
-                  catalogVehicle?.imageAlt || "Garajınızdaki araç";
-                const vehicleName =
-                  vehicle.name || catalogVehicle?.name || "Araç";
-                return `<article class="vehicle-card vehicle-owned">
-                  <div class="vehicle-photo"><img src="${image}" alt="${escapeHtml(imageAlt)}" loading="lazy" decoding="async"><span class="vehicle-class">${catalogVehicle?.type || "Araç"}</span></div>
-                  <div class="vehicle-info">
-                    <h3>${escapeHtml(vehicleName)}</h3>
-                    <span class="vehicle-price">${money(vehicle.price)}</span>
-                    <div class="vehicle-meta"><span>Günlük kira</span><strong>${money(vehicle.rent)}</strong></div>
-                    <button class="danger vehicle-buy" onclick="sellVehicle(${index})">Aracı Sat · %75</button>
-                  </div>
-                </article>`;
+                const displayVehicle = catalogVehicle
+                  ? {
+                      ...catalogVehicle,
+                      ...vehicle,
+                      type: catalogVehicle.type,
+                      image: catalogVehicle.image,
+                      imageAlt: catalogVehicle.imageAlt,
+                      photoCredit: catalogVehicle.photoCredit,
+                      photoHref: catalogVehicle.photoHref,
+                    }
+                  : vehicle;
+                return vehicleCardView(displayVehicle, index);
               })
               .join("")
           : `<div class="garage-empty"><span>🚘</span><h3>Garaj henüz boş</h3><p>İlk aracını aşağıdaki galeriden seç.</p></div>`;
         return (
           shell(
-            "🚗 Araç Galerisi",
-            "Gerçek araç fotoğrafları · satın al ve kiraya ver",
+            "🚗 Araç Pazarı",
+            "45 ilan · motosiklet, otomobil ve ticari filo",
           ) +
           `<section class="garage-section">
             <div class="section-title"><div><h2>Garajım</h2><div class="small muted">${S.vehicles.length} araç</div></div><span class="tag">Gün ${S.day}</span></div>
             ${ownedVehicles}
           </section>
           <section class="garage-section">
-            <div class="section-title"><div><h2>Galerideki Araçlar</h2><div class="small muted">Her araç günlük kira getirir</div></div><span class="tag">${garageCatalog.length} ilan</span></div>
-            <div class="vehicle-grid">${garageCatalog
-              .map(
-                (vehicle) => `<article class="vehicle-card">
-                  <div class="vehicle-photo"><img src="${vehicle.image}" alt="${escapeHtml(vehicle.imageAlt)}" loading="lazy" decoding="async"><span class="vehicle-class">${vehicle.type}</span></div>
-                  <div class="vehicle-info">
-                    <h3>${escapeHtml(vehicle.name)}</h3>
-                    <span class="vehicle-price">${money(vehicle.price)}</span>
-                    <div class="vehicle-meta"><span>Günlük kira</span><strong>${money(vehicle.rent)}</strong></div>
-                    <button class="success vehicle-buy" onclick="buyVehicle('${vehicle.id}')">🚗 Aracı Satın Al</button>
-                  </div>
-                </article>`,
-              )
-              .join("")}</div>
-            <p class="small muted">Fotoğraflar Unsplash üzerinden yüklenir.</p>
+            <div class="section-title"><div><h2>Satılık Araçlar</h2><div id="garageResults" class="small muted">${garageCatalog.length} araç listeleniyor</div></div><span class="tag">Ucuzdan pahalıya</span></div>
+            <div class="garage-toolbar">
+              <input id="garageSearch" class="input" type="search" value="${escapeHtml(garageFilters.search)}" placeholder="Marka veya model ara" aria-label="Araç ara" oninput="filterGarage()">
+              <select id="garageType" class="input" aria-label="Araç türü" onchange="filterGarage()">
+                ${["Tümü", "Motosiklet", "Sedan", "SUV", "Spor", "Kamyonet", "Kamyon", "TIR"].map((type) => `<option value="${type}" ${garageFilters.type === type ? "selected" : ""}>${type}</option>`).join("")}
+              </select>
+              <select id="garageSort" class="input" aria-label="Fiyat sıralaması" onchange="filterGarage()">
+                <option value="asc" ${garageFilters.sort === "asc" ? "selected" : ""}>Fiyat: ucuzdan pahalıya</option>
+                <option value="desc" ${garageFilters.sort === "desc" ? "selected" : ""}>Fiyat: pahalıdan ucuza</option>
+              </select>
+            </div>
+            <div id="garageListings" class="vehicle-grid">${garageListingsView()}</div>
+            <p class="small muted">Fotoğraflar temsilîdir. Unsplash ve Wikimedia Commons kaynak/lisans bağlantıları her ilanda yer alır.</p>
           </section>`
         );
       }
@@ -2292,6 +2915,7 @@
           let j = S.activeJobs[id];
           j.rem -= elapsed;
           if (j.rem <= 0) {
+            S.taxDebt += Math.round(j.pay * 0.12);
             changeMoney(j.pay, "Maaş");
             addXP(j.xp);
             toast(`✅ İş tamamlandı! +${money(j.pay)}`);
@@ -2302,6 +2926,7 @@
           let t = S.activeTenders[id];
           t.rem -= elapsed;
           if (t.rem <= 0) {
+            S.taxDebt += Math.round(t.reward * 0.12);
             changeMoney(t.reward, "İhale Ödülü");
             toast(`🏛️ İhale tamamlandı! +${money(t.reward)}`);
             delete S.activeTenders[id];
@@ -2312,6 +2937,7 @@
           c.rem -= elapsed;
           let cat = constructionCatalog.find((x) => x.id === id);
           if (c.rem <= 0) {
+            S.taxDebt += Math.round(cat.reward * 0.12);
             changeMoney(cat.reward, "İnşaat Ödülü");
             toast(`🚜 ${cat.name} tamamlandı! +${money(cat.reward)}`);
             delete S.activeConstructions[id];
@@ -2361,7 +2987,14 @@
             return acc + (l ? l.daily : 0);
           }, 0);
           let propIncome = S.properties.reduce((acc, p) => acc + p.rent, 0);
-          let vehIncome = S.vehicles.reduce((acc, v) => acc + v.rent, 0);
+          let vehIncome = S.vehicles.reduce(
+            (acc, vehicle) => acc + vehicle.rent,
+            0,
+          );
+          let vehicleExpense = S.vehicles.reduce(
+            (acc, vehicle) => acc + (vehicle.maintenance || 0),
+            0,
+          );
           let totalIncome =
             busIncome +
             subIncome +
@@ -2375,7 +3008,7 @@
             propIncome +
             vehIncome;
           let staffExpense = S.staff.length * 15000;
-          let netTotal = totalIncome - staffExpense;
+          let netTotal = totalIncome - staffExpense - vehicleExpense;
           if (netTotal > 0) changeMoney(netTotal, "Net Günlük Gelir");
           if (S.bankDeposit > 0) {
             S.bankDeposit += Math.round(S.bankDeposit * 0.005);
@@ -2418,6 +3051,13 @@
       }
       function startJob(id) {
         let j = jobs.find((x) => x.id === id);
+        if (
+          j.vehicleType &&
+          !S.vehicles.some((vehicle) => vehicle.type === j.vehicleType)
+        ) {
+          toast(`❌ Bu iş için ${j.vehicleType} sahibi olmalısın!`);
+          return;
+        }
         if (S.level < j.level || S.rep < j.repReq) {
           toast(`❌ Seviye ${j.level} ve ${j.repReq} İtibar gerekli!`);
           return;
