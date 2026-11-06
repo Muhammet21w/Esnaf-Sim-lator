@@ -4,6 +4,11 @@ create table if not exists public.game_saves (
   updated_at timestamptz not null default now()
 );
 
+alter table public.game_saves
+  add column if not exists save_data jsonb not null default '{}'::jsonb;
+alter table public.game_saves
+  add column if not exists updated_at timestamptz not null default now();
+
 alter table public.game_saves enable row level security;
 revoke all on public.game_saves from public, anon;
 grant select, insert, update on public.game_saves to authenticated;
