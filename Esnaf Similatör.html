@@ -1,0 +1,2322 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"
+    />
+    <meta name="theme-color" content="#101827" />
+    <title>Esnaf Simülatör Pro — Online v5.4 Ultimate Edition</title>
+    <!-- Google tag (gtag.js) -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtm.js?id=GTM-5NMWNVX7"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+    </script>
+    <style>
+      :root {
+        --bg: #0b1220;
+        --panel: #151f30;
+        --panel2: #1d2a3d;
+        --line: #2b3b52;
+        --text: #edf4ff;
+        --muted: #9aabc2;
+        --green: #28d69a;
+        --blue: #60a5fa;
+        --gold: #f6bd4b;
+        --red: #fb7185;
+        --purple: #b69cff;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: radial-gradient(circle at top, #182843, #0b1220 55%);
+        color: var(--text);
+        font:
+          14px system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        min-height: 100vh;
+      }
+      button,
+      input,
+      select {
+        font: inherit;
+      }
+      button {
+        cursor: pointer;
+        border: 0;
+        border-radius: 10px;
+        padding: 9px 12px;
+        font-weight: 800;
+        background: var(--blue);
+        color: #07111e;
+      }
+      button:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+      .secondary {
+        background: #30435d;
+        color: var(--text);
+      }
+      .success {
+        background: var(--green);
+        color: #062319;
+      }
+      .warning {
+        background: var(--gold);
+        color: #271900;
+      }
+      .danger {
+        background: var(--red);
+        color: #310610;
+      }
+      .purple {
+        background: var(--purple);
+        color: #1d1238;
+      }
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        background: #0c1524ed;
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--line);
+        padding: 12px max(14px, calc((100vw - 1150px) / 2));
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+      .brand h1 {
+        font-size: 18px;
+        margin: 0;
+      }
+      .brand small {
+        color: var(--muted);
+      }
+      .hud {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 8px;
+      }
+      .stat {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        padding: 9px;
+        border-radius: 12px;
+        min-width: 0;
+      }
+      .stat span {
+        display: block;
+        color: var(--muted);
+        font-size: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+      }
+      .stat b {
+        font-size: 13px;
+        white-space: nowrap;
+      }
+      .green {
+        color: var(--green);
+      }
+      .gold {
+        color: var(--gold);
+      }
+      .blue {
+        color: var(--blue);
+      }
+      .red {
+        color: var(--red);
+      }
+      .wrap {
+        max-width: 1150px;
+        margin: auto;
+        padding: 15px 14px 95px;
+      }
+      .tabs {
+        display: flex;
+        gap: 6px;
+        overflow: auto;
+        padding: 4px 0 12px;
+        scrollbar-width: thin;
+      }
+      .tabs button {
+        white-space: nowrap;
+        background: var(--panel2);
+        color: var(--muted);
+        border: 1px solid var(--line);
+        padding: 8px 11px;
+        font-size: 12px;
+      }
+      .tabs button.active {
+        background: var(--blue);
+        color: #061323;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        gap: 12px;
+      }
+      .card {
+        background: linear-gradient(145deg, #19263a, #131d2d);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 15px;
+        box-shadow: 0 8px 25px #0002;
+      }
+      .card h3 {
+        margin: 0 0 8px;
+        font-size: 15px;
+      }
+      .card p {
+        margin: 5px 0;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+      .card .big {
+        font-size: 23px;
+        font-weight: 900;
+        margin: 7px 0;
+      }
+      .row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      .small {
+        font-size: 11px;
+      }
+      .tag {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 20px;
+        background: #263952;
+        color: #cbdcf2;
+        font-size: 10px;
+        font-weight: 800;
+      }
+      .actions {
+        display: flex;
+        gap: 7px;
+        flex-wrap: wrap;
+        margin-top: 12px;
+      }
+      .actions button {
+        flex: 1;
+        min-width: 95px;
+      }
+      .section-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 8px 0 13px;
+      }
+      .section-title h2 {
+        font-size: 19px;
+        margin: 0;
+      }
+      .list {
+        display: grid;
+        gap: 9px;
+      }
+      .item {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 13px;
+        padding: 12px;
+      }
+      .item h4 {
+        margin: 0 0 5px;
+      }
+      .item p {
+        margin: 3px 0;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .notice {
+        padding: 12px;
+        border-radius: 12px;
+        background: #172b42;
+        border: 1px solid #31516f;
+        color: #c9e4ff;
+        margin-bottom: 12px;
+        line-height: 1.5;
+      }
+      .input {
+        width: 100%;
+        padding: 11px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: #0e1725;
+        color: white;
+        margin: 5px 0 10px;
+      }
+      .overlay {
+        position: fixed;
+        inset: 0;
+        background: #050a13ef;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        z-index: 50;
+      }
+      .modal {
+        width: min(480px, 100%);
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 22px;
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+      .modal h2 {
+        margin-top: 0;
+      }
+      .toast {
+        position: fixed;
+        bottom: 75px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #e8f3ff;
+        color: #091522;
+        padding: 11px 16px;
+        border-radius: 12px;
+        font-weight: 900;
+        z-index: 100;
+        box-shadow: 0 5px 25px #0008;
+        display: none;
+        max-width: 90%;
+        text-align: center;
+      }
+      .bottom {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: #0b1422ed;
+        border-top: 1px solid var(--line);
+        padding: 9px 14px;
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        z-index: 25;
+      }
+      .bottom button {
+        font-size: 11px;
+        padding: 9px 12px;
+      }
+      canvas {
+        width: 100% !important;
+        height: 120px !important;
+        background: #0e1725;
+        border-radius: 8px;
+        margin-top: 8px;
+        border: 1px solid var(--line);
+      }
+      .hidden {
+        display: none !important;
+      }
+      .online-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 11px;
+        color: var(--green);
+        background: #0d261e;
+        padding: 3px 8px;
+        border-radius: 12px;
+        border: 1px solid #1c4d3b;
+      }
+      .dot {
+        width: 7px;
+        height: 7px;
+        background: var(--green);
+        border-radius: 50%;
+        display: inline-block;
+        box-shadow: 0 0 8px var(--green);
+      }
+      .netlify-badge {
+        margin-bottom: 8px;
+        display: block;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  </head>
+  <body>
+    <header>
+      <div class="brand">
+        <div>
+          <a
+            href="https://app.netlify.com/projects/esnaf-simlator/deploys"
+            target="_blank"
+            class="netlify-badge"
+            ><img
+              src="https://api.netlify.com/api/v1/badges/814cc68c-4f27-49d1-89e8-875cc038f9cf/deploy-status"
+              alt="Netlify Status"
+          /></a>
+          <h1>🏪 ESNAF SİMÜLATÖR <span class="gold">ONLINE v5.4</span></h1>
+          <small class="online-badge"
+            ><span class="dot"></span> Çevrim İçi Sunucu Bağlantısı Aktif</small
+          >
+        </div>
+        <button class="secondary" onclick="openTab('settings')">⚙️</button>
+      </div>
+      <div class="hud">
+        <div class="stat"><span>💵 Nakit</span><b id="money">250.000 ₺</b></div>
+        <div class="stat">
+          <span>⭐ Seviye / Yaş</span><b id="level">1 • 35 Yaş</b>
+        </div>
+        <div class="stat"><span>⚡ Enerji</span><b id="energy">150/150</b></div>
+        <div class="stat">
+          <span>🏛️ Lobi / İtibar</span
+          ><b id="lobbyPower" class="gold">10 Puan</b>
+        </div>
+        <div class="stat"><span>👶 Varis</span><b id="heirStatus">Yok</b></div>
+      </div>
+    </header>
+    <main class="wrap">
+      <nav class="tabs" id="tabs"></nav>
+      <div id="view"></div>
+    </main>
+    <div class="bottom">
+      <button class="secondary" onclick="saveGame(true)">
+        💾 Buluta Kaydet
+      </button>
+      <button class="secondary" onclick="openTab('leaderboard')">
+        🏆 Sıralama
+      </button>
+      <button class="secondary" onclick="openTab('holding')">🏢 Holding</button>
+      <button class="secondary" onclick="openTab('finance')">📈 Finans</button>
+      <button class="danger" onclick="logout()">Çıkış Yap</button>
+    </div>
+    <div class="toast" id="toast"></div>
+    <!-- KULLANICI ADI & ŞİFRE GİRİŞ/KAYIT MODALI -->
+    <div class="overlay" id="auth">
+      <div class="modal">
+        <div style="font-size: 35px">🏪</div>
+        <h2>Esnaf Simülatör Online v5.4</h2>
+        <p class="muted">
+          Kullanıcı Adı ve Şifrenizle Giriş Yapın veya Kaydolun
+        </p>
+        <div
+          style="display: flex; gap: 5px; margin-bottom: 15px; flex-wrap: wrap"
+        >
+          <button
+            id="tabRegBtn"
+            class="success"
+            style="flex: 1"
+            onclick="switchAuthMode('register')"
+          >
+            📝 Kayıt Ol
+          </button>
+          <button
+            id="tabLogBtn"
+            class="secondary"
+            style="flex: 1"
+            onclick="switchAuthMode('login')"
+          >
+            🔑 Giriş Yap
+          </button>
+        </div>
+        <div id="registerFlow">
+          <label>Kullanıcı Adı</label>
+          <input
+            class="input"
+            id="regUsername"
+            placeholder="ornegin: esnaf_kral"
+            maxlength="24"
+          />
+          <label>E-posta</label>
+          <input
+            class="input"
+            id="regEmail"
+            type="email"
+            autocomplete="email"
+            placeholder="ornek@eposta.com"
+          />
+          <label>Şifre</label>
+          <input
+            class="input"
+            id="regPass"
+            type="password"
+            placeholder="En az 6 karakter"
+          />
+          <label>Şifre Tekrar</label>
+          <input
+            class="input"
+            id="regPassConfirm"
+            type="password"
+            placeholder="******"
+          />
+          <button
+            class="success"
+            style="width: 100%; margin-top: 10px"
+            onclick="handleRegister()"
+          >
+            Hesap Oluştur ve Başla
+          </button>
+        </div>
+        <div id="loginFlow" class="hidden">
+          <label>E-posta</label>
+          <input
+            class="input"
+            id="loginEmail"
+            type="email"
+            autocomplete="email"
+            placeholder="ornek@eposta.com"
+          />
+          <label>Şifre</label>
+          <input
+            class="input"
+            id="loginPass"
+            type="password"
+            placeholder="******"
+          />
+          <button
+            class="success"
+            style="width: 100%; margin-top: 10px"
+            onclick="handleLogin()"
+          >
+            Oyuna Giriş Yap
+          </button>
+        </div>
+      </div>
+    </div>
+    <script>
+      "use strict";
+      const $ = (id) => document.getElementById(id);
+      const money = (n) => Math.floor(n).toLocaleString("tr-TR") + " ₺";
+      const now = () => Date.now();
+      const escapeHtml = (value) =>
+        String(value).replace(/[&<>"']/g, (char) => {
+          const entities = {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;",
+          };
+          return entities[char];
+        });
+      const SUPABASE_URL = "https://vypfcrbglctkknybpbki.supabase.co";
+      const SUPABASE_KEY = "sb_publishable_qCheNYZbue4DDAi4Ci22xQ_orTdx-X8";
+      let supabaseClient = null;
+      let cloudUser = null;
+      let cloudSaveTimer = null;
+      let leaderboardData = [];
+      function initSupabase() {
+        if (window.supabase) {
+          supabaseClient = window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_KEY,
+          );
+        }
+      }
+      let authMode = "register";
+      function switchAuthMode(mode) {
+        authMode = mode;
+        $("tabRegBtn").className =
+          mode === "register" ? "success" : "secondary";
+        $("tabLogBtn").className = mode === "login" ? "success" : "secondary";
+        $("registerFlow").classList.toggle("hidden", mode !== "register");
+        $("loginFlow").classList.toggle("hidden", mode !== "login");
+      }
+      async function handleRegister() {
+        let username = $("regUsername").value.trim();
+        let email = $("regEmail").value.trim().toLowerCase();
+        let pass = $("regPass").value;
+        let confirmPass = $("regPassConfirm").value;
+        if (!supabaseClient) {
+          toast("❌ Sunucu bağlantısı kurulamadı. Sayfayı yenileyin.");
+          return;
+        }
+        if (
+          username.length < 3 ||
+          username.length > 24 ||
+          !/^[\p{L}\p{N}_ -]+$/u.test(username)
+        ) {
+          toast(
+            "❌ Kullanıcı adı 3-24 karakter olmalı; harf, sayı, boşluk, _ veya - kullanın.",
+          );
+          return;
+        }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          toast("❌ Geçerli bir e-posta adresi girin.");
+          return;
+        }
+        if (pass.length < 6) {
+          toast("❌ Şifre en az 6 karakter olmalıdır!");
+          return;
+        }
+        if (pass !== confirmPass) {
+          toast("❌ Şifreler uyuşmuyor!");
+          return;
+        }
+        try {
+          const { data, error } = await supabaseClient.auth.signUp({
+            email: email,
+            password: pass,
+            options: { data: { display_name: username } },
+          });
+          if (error) throw error;
+          if (data.user && data.session) {
+            cloudUser = data.user;
+            toast("🎉 Hesabınız başarıyla oluşturuldu!");
+            await loadCloudGame(username);
+          } else if (data.user) {
+            toast(
+              "📧 Hesabınız açıldı. Oyuna girmek için e-posta adresinizi doğrulayın.",
+            );
+          }
+        } catch (error) {
+          toast("❌ Kayıt başarısız: " + error.message);
+        }
+      }
+      async function handleLogin() {
+        let email = $("loginEmail").value.trim().toLowerCase();
+        let pass = $("loginPass").value;
+        if (!supabaseClient) {
+          toast("❌ Sunucu bağlantısı kurulamadı. Sayfayı yenileyin.");
+          return;
+        }
+        if (!email || !pass) {
+          toast("Lütfen e-posta adresinizi ve şifrenizi girin!");
+          return;
+        }
+        try {
+          const { data, error } = await supabaseClient.auth.signInWithPassword({
+            email: email,
+            password: pass,
+          });
+          if (error) throw error;
+          if (data.user) {
+            cloudUser = data.user;
+            toast("🔑 Giriş başarılı! Veriler yükleniyor...");
+            await loadCloudGame();
+          }
+        } catch (error) {
+          toast("❌ Giriş Başarısız: Kullanıcı adı veya şifre hatalı!");
+        }
+      }
+      async function loadCloudGame(customUsername) {
+        if (!cloudUser) return;
+        try {
+          let username =
+            customUsername ||
+            (cloudUser.user_metadata && cloudUser.user_metadata.display_name) ||
+            cloudUser.email.split("@")[0];
+          const { data, error } = await supabaseClient
+            .from("game_saves")
+            .select("save_data")
+            .eq("user_id", cloudUser.id)
+            .maybeSingle();
+          if (error) throw error;
+          S = defaultState();
+          S.username = username;
+          S.email = username;
+          if (data && data.save_data) {
+            S = {
+              ...defaultState(),
+              ...data.save_data,
+              username,
+              email: username,
+            };
+            let elapsedOffline = Math.floor(
+              (now() - (S.lastTick || now())) / 1000,
+            );
+            if (elapsedOffline > 30) {
+              let offlineDays = Math.floor(elapsedOffline / 30);
+              let totalPassive = 0;
+              for (let bId in S.businesses) {
+                let cat = businessesCatalog.find((x) => x.id === bId);
+                if (cat)
+                  totalPassive +=
+                    cat.base * S.businesses[bId].level * offlineDays;
+              }
+              for (let subId in S.subsidiaries) {
+                let sub = holdingSubsidiaries.find((x) => x.id === subId);
+                if (sub) totalPassive += sub.dividend * offlineDays;
+              }
+              for (let fId in S.factories) {
+                let f = factoriesCatalog.find((x) => x.id === fId);
+                if (f) totalPassive += f.dailyProd * offlineDays;
+              }
+              for (let hId in S.hotels) {
+                let h = hotelsCatalog.find((x) => x.id === hId);
+                if (h) totalPassive += h.daily * offlineDays;
+              }
+              for (let eId in S.energies) {
+                let en = energyCatalog.find((x) => x.id === eId);
+                if (en) totalPassive += en.daily * offlineDays;
+              }
+              for (let mId in S.mines) {
+                let m = miningCatalog.find((x) => x.id === mId);
+                if (m) totalPassive += m.daily * offlineDays;
+              }
+              for (let lId in S.logistics) {
+                let l = logisticsCatalog.find((x) => x.id === lId);
+                if (l) totalPassive += l.daily * offlineDays;
+              }
+              for (let crId in S.crypto) {
+                let cr = cryptoCatalog.find((x) => x.id === crId);
+                if (cr) totalPassive += cr.daily * offlineDays;
+              }
+              for (let hsId in S.hospitals) {
+                let hs = hospitalCatalog.find((x) => x.id === hsId);
+                if (hs) totalPassive += hs.daily * offlineDays;
+              }
+              totalPassive +=
+                S.properties.reduce((acc, p) => acc + p.rent, 0) * offlineDays;
+              totalPassive +=
+                S.vehicles.reduce((acc, v) => acc + v.rent, 0) * offlineDays;
+              if (S.bankDeposit > 0) {
+                let interestEarned = Math.round(
+                  S.bankDeposit * 0.005 * offlineDays,
+                );
+                S.bankDeposit += interestEarned;
+                totalPassive += interestEarned;
+              }
+              if (totalPassive > 0) {
+                S.money += totalPassive;
+                toast(
+                  `💤 Çevrim dışı kalınan sürede toplam ${money(totalPassive)} kazanç elde edildi!`,
+                );
+              }
+            }
+            toast("☁️ Bulut kaydı yüklendi!");
+          } else {
+            toast("🎮 Yeni profiliniz aktifleşti!");
+          }
+          $("auth").classList.add("hidden");
+          render();
+          updateHUD();
+          startTicker();
+          await saveGame();
+          fetchLeaderboard();
+        } catch (err) {
+          console.error(err);
+          cloudUser = null;
+          if (supabaseClient)
+            await supabaseClient.auth.signOut().catch(console.error);
+          toast("⚠️ Sunucu verisi okunamadı.");
+        }
+      }
+      async function saveGame(show = false) {
+        if (!cloudUser || !supabaseClient) return;
+        clearTimeout(cloudSaveTimer);
+        const performSave = async () => {
+          try {
+            S.lastTick = now();
+            const { error } = await supabaseClient.from("game_saves").upsert(
+              {
+                user_id: cloudUser.id,
+                save_data: S,
+                updated_at: new Date().toISOString(),
+              },
+              { onConflict: "user_id" },
+            );
+            if (error) throw error;
+            const { error: leaderboardSaveError } = await supabaseClient
+              .from("leaderboard")
+              .upsert(
+                {
+                  user_id: cloudUser.id,
+                  username: S.username || "Esnaf",
+                  money: Math.floor(S.money),
+                  level: S.level,
+                  updated_at: new Date().toISOString(),
+                },
+                { onConflict: "user_id" },
+              );
+            if (leaderboardSaveError)
+              console.error("Leaderboard save error:", leaderboardSaveError);
+            if (show) {
+              toast(
+                leaderboardSaveError
+                  ? "☁️ Oyun kaydedildi; sıralama güncellenemedi."
+                  : "☁️ Buluta kaydedildi!",
+              );
+            }
+          } catch (error) {
+            console.error("Save error:", error);
+            if (show) toast("❌ Sunucuya kaydedilemedi!");
+          }
+        };
+        if (show) await performSave();
+        else cloudSaveTimer = setTimeout(performSave, 1000);
+      }
+      async function fetchLeaderboard() {
+        if (!supabaseClient) return;
+        try {
+          const { data, error } = await supabaseClient
+            .from("leaderboard")
+            .select("username, money, level")
+            .order("money", { ascending: false })
+            .limit(50);
+          if (error) throw error;
+          leaderboardData = (data || []).map((item) => ({
+            username: item.username || "Bilinmeyen Esnaf",
+            money: Number(item.money) || 0,
+            level: Number(item.level) || 1,
+          }));
+          leaderboardError = "";
+          if (active === "leaderboard") render();
+        } catch (err) {
+          console.error("Leaderboard error:", err);
+          leaderboardData = [];
+          leaderboardError =
+            "Sıralama henüz hazır değil. Supabase tablo kurulumunu kontrol edin.";
+          if (active === "leaderboard") render();
+        }
+      }
+      async function logout() {
+        await saveGame(true);
+        if (supabaseClient) await supabaseClient.auth.signOut();
+        clearInterval(tickHandle);
+        cloudUser = null;
+        $("auth").classList.remove("hidden");
+        switchAuthMode("login");
+        toast("🔒 Oturum kapatıldı.");
+      }
+      window.onload = async () => {
+        initSupabase();
+        if (supabaseClient) {
+          const { data } = await supabaseClient.auth.getSession();
+          if (data && data.session) {
+            cloudUser = data.session.user;
+            await loadCloudGame();
+            return;
+          }
+        }
+        $("auth").classList.remove("hidden");
+      };
+      window.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "hidden") saveGame();
+      });
+      const tabs = [
+        ["home", "🏠 Ana Sayfa"],
+        ["leaderboard", "🏆 Online Sıralama"],
+        ["jobs", "💼 Kariyer"],
+        ["business", "🏢 Mağazalar"],
+        ["holding", "🏢 Holding"],
+        ["industry", "🏭 Fabrikalar"],
+        ["crypto", "🪙 Kripto"],
+        ["hospital", "🏥 Hastane"],
+        ["tenders", "🏛️ İhaleler"],
+        ["finance", "📈 Borsa"],
+        ["bank", "🏦 Banka"],
+        ["taxOffice", "🏛️ Vergi"],
+        ["city", "🏙️ Yöresel AVM"],
+        ["hotels", "🏨 Oteller"],
+        ["energy", "⚡ Enerji"],
+        ["mining", "⛏️ Maden"],
+        ["construction", "🚜 İnşaat"],
+        ["logistics", "📦 Lojistik"],
+        ["garage", "🚗 Garaj"],
+        ["property", "🏘️ Emlak"],
+        ["farm", "🌾 Çiftlik"],
+        ["staff", "👥 Personel"],
+        ["family", "👶 Varis"],
+        ["settings", "⚙️ Ayarlar"],
+      ];
+      const jobs = [
+        {
+          id: "waiter",
+          name: "Çırak Garson",
+          time: 15,
+          pay: 650,
+          xp: 15,
+          energy: 10,
+          level: 1,
+          repReq: 0,
+        },
+        {
+          id: "courier",
+          name: "Moto Kurye",
+          time: 40,
+          pay: 2200,
+          xp: 35,
+          energy: 20,
+          level: 2,
+          repReq: 15,
+        },
+        {
+          id: "clerk",
+          name: "Şirket Muhasebecisi",
+          time: 90,
+          pay: 12500,
+          xp: 115,
+          energy: 30,
+          level: 4,
+          repReq: 35,
+        },
+        {
+          id: "engineer",
+          name: "Kıdemli Ar-Ge Mühendisi",
+          time: 180,
+          pay: 65000,
+          xp: 260,
+          energy: 45,
+          level: 6,
+          repReq: 60,
+        },
+        {
+          id: "manager",
+          name: "Bölge Satış Müdürü",
+          time: 250,
+          pay: 95000,
+          xp: 470,
+          energy: 50,
+          level: 8,
+          repReq: 75,
+        },
+        {
+          id: "director",
+          name: "Yönetim Kurulu Üyesi",
+          time: 450,
+          pay: 650000,
+          xp: 1900,
+          energy: 70,
+          level: 12,
+          repReq: 150,
+        },
+        {
+          id: "ceo",
+          name: "Holding CEO'su",
+          time: 600,
+          pay: 1850000,
+          xp: 3600,
+          energy: 80,
+          level: 15,
+          repReq: 250,
+        },
+      ];
+      const businessesCatalog = [
+        {
+          id: "kiosk",
+          name: "Seyyar Büfe",
+          price: 25000,
+          base: 500,
+          reqRep: 0,
+        },
+        {
+          id: "market",
+          name: "Mahalle Marketi",
+          price: 85000,
+          base: 1900,
+          reqRep: 15,
+        },
+        {
+          id: "cafe",
+          name: "Lüks Kafe",
+          price: 240000,
+          base: 5200,
+          reqRep: 40,
+        },
+        {
+          id: "pastane",
+          name: "Gurme Pastane",
+          price: 480000,
+          base: 10500,
+          reqRep: 60,
+        },
+        {
+          id: "firin",
+          name: "Taş Fırın",
+          price: 750000,
+          base: 17000,
+          reqRep: 80,
+        },
+        {
+          id: "kasap",
+          name: "Doğal Et Kasabı",
+          price: 1200000,
+          base: 28000,
+          reqRep: 100,
+        },
+        {
+          id: "manav",
+          name: "Organik Manav",
+          price: 600000,
+          base: 13500,
+          reqRep: 50,
+        },
+        {
+          id: "tekstil",
+          name: "Moda Tekstil Mağazası",
+          price: 2500000,
+          base: 58000,
+          reqRep: 140,
+        },
+        {
+          id: "elektronik",
+          name: "Tekno AVM Mağazası",
+          price: 5500000,
+          base: 135000,
+          reqRep: 200,
+        },
+        {
+          id: "akaryakit",
+          name: "Akaryakıt İstasyonu",
+          price: 12000000,
+          base: 310000,
+          reqRep: 250,
+        },
+        {
+          id: "avm_sub",
+          name: "Mega Alışveriş Merkezi",
+          price: 45000000,
+          base: 1200000,
+          reqRep: 400,
+        },
+      ];
+      const holdingSubsidiaries = [
+        {
+          id: "sub_tech",
+          name: "Teknoloji İştiraki A.Ş.",
+          cost: 15000000,
+          dividend: 180000,
+        },
+        {
+          id: "sub_enerji",
+          name: "Enerji Üretim İştiraki",
+          cost: 35000000,
+          dividend: 450000,
+        },
+        {
+          id: "sub_finans",
+          name: "Yatırım Bankası İştiraki",
+          cost: 80000000,
+          dividend: 1100000,
+        },
+      ];
+      const factoriesCatalog = [
+        {
+          id: "f_gida",
+          name: "Gıda Üretim Fabrikası",
+          cost: 5000000,
+          dailyProd: 120000,
+        },
+        {
+          id: "f_tekstil",
+          name: "Tekstil Fabrikası",
+          cost: 12000000,
+          dailyProd: 290000,
+        },
+        {
+          id: "f_otomotiv",
+          name: "Otomotiv Fabrikası",
+          cost: 55000000,
+          dailyProd: 1450000,
+        },
+      ];
+      const cryptoCatalog = [
+        {
+          id: "rig_asic",
+          name: "ASIC Madencilik Rig'i",
+          cost: 8500000,
+          daily: 220000,
+        },
+        {
+          id: "farm_crypto",
+          name: "Dev Kripto Çiftlik Tesisi",
+          cost: 30000000,
+          daily: 850000,
+        },
+      ];
+      const hospitalCatalog = [
+        {
+          id: "klinik",
+          name: "Özel Semt Polikliniği",
+          cost: 15000000,
+          daily: 380000,
+        },
+        {
+          id: "tip_merkezi",
+          name: "Tam Teşekküllü Özel Hastane",
+          cost: 60000000,
+          daily: 1650000,
+        },
+      ];
+      const tendersList = [
+        {
+          id: "t1",
+          name: "Kent Parkı Düzenlemesi",
+          cost: 350000,
+          reward: 850000,
+          time: 60,
+          req: 10,
+        },
+        {
+          id: "t2",
+          name: "Otoyol Asfalt Projesi",
+          cost: 1200000,
+          reward: 3100000,
+          time: 120,
+          req: 20,
+        },
+        {
+          id: "t3",
+          name: "Metro Hattı Projesi",
+          cost: 14000000,
+          reward: 39000000,
+          time: 300,
+          req: 90,
+        },
+      ];
+      const stockTickers = [
+        {
+          id: "ASELS",
+          name: "Anadolu Savunma",
+          price: 145,
+          volatility: 0.07,
+          history: [145, 148, 142, 150, 145],
+        },
+        {
+          id: "THY",
+          name: "Türkiye Hava Yolları",
+          price: 280,
+          volatility: 0.09,
+          history: [280, 275, 285, 290, 280],
+        },
+        {
+          id: "USD",
+          name: "ABD Doları",
+          price: 34.5,
+          volatility: 0.02,
+          history: [34.2, 34.3, 34.5, 34.4, 34.5],
+        },
+        {
+          id: "GOLD",
+          name: "Gram Altın",
+          price: 3050,
+          volatility: 0.03,
+          history: [3000, 3020, 3050, 3040, 3050],
+        },
+      ];
+      const localDishes = [
+        {
+          id: "adana",
+          name: "🔥 Adana Kebap & Şalgam",
+          cost: 350,
+          energy: 50,
+          desc: "Zırh kıyması ve acılı şalgam.",
+        },
+        {
+          id: "iskender",
+          name: "🥩 Bursa İskender",
+          cost: 450,
+          energy: 65,
+          desc: "Tereyağlı ve domates soslu.",
+        },
+        {
+          id: "manti",
+          name: "🥟 Kayseri Mantısı",
+          cost: 300,
+          energy: 45,
+          desc: "Sarımsaklı yoğurtlu.",
+        },
+        {
+          id: "kunefe",
+          name: "🧀 Hatay Künefe",
+          cost: 250,
+          energy: 35,
+          desc: "Sıcak şerbetli çıtır tatlı.",
+        },
+      ];
+      const hotelsCatalog = [
+        { id: "boutique", name: "Butik Otel", cost: 2000000, daily: 45000 },
+        {
+          id: "resort",
+          name: "5 Yıldızlı Tatil Köyü",
+          cost: 12000000,
+          daily: 290000,
+        },
+        {
+          id: "palace",
+          name: "Grand Palace Otel",
+          cost: 45000000,
+          daily: 1150000,
+        },
+      ];
+      const energyCatalog = [
+        {
+          id: "ges",
+          name: "Güneş Enerji Santrali (GES)",
+          cost: 3500000,
+          daily: 95000,
+        },
+        {
+          id: "res",
+          name: "Rüzgar Enerji Santrali (RES)",
+          cost: 9000000,
+          daily: 250000,
+        },
+      ];
+      const miningCatalog = [
+        {
+          id: "copper",
+          name: "Bakır Madeni Ocağı",
+          cost: 750000,
+          daily: 18000,
+        },
+        { id: "iron", name: "Demir-Çelik Madeni", cost: 2200000, daily: 55000 },
+        {
+          id: "gold_m",
+          name: "Altın Madeni Sahası",
+          cost: 15000000,
+          daily: 380000,
+        },
+      ];
+      const constructionCatalog = [
+        {
+          id: "konut",
+          name: "Lüks Konut Projesi",
+          cost: 4000000,
+          reward: 9500000,
+          time: 180,
+        },
+        {
+          id: "plaza",
+          name: "İş Merkezi Plaza",
+          cost: 18000000,
+          reward: 44000000,
+          time: 350,
+        },
+      ];
+      const logisticsCatalog = [
+        { id: "courier", name: "Moto Kurye Filosu", cost: 150000, daily: 4500 },
+        {
+          id: "cargo",
+          name: "Ticari Dağıtım Minibüsü",
+          cost: 600000,
+          daily: 16000,
+        },
+        {
+          id: "tir",
+          name: "Uluslararası Tır Filosu",
+          cost: 4500000,
+          daily: 120000,
+        },
+      ];
+      const garageCatalog = [
+        {
+          id: "car_sedan",
+          name: "Şehir Sedan Otomobil",
+          price: 450000,
+          rent: 8500,
+        },
+        { id: "car_suv", name: "Lüks SUV Araç", price: 2100000, rent: 42000 },
+        {
+          id: "car_sport",
+          name: "Spor Yarış Arabası",
+          price: 7500000,
+          rent: 160000,
+        },
+      ];
+      const propertyCatalog = [
+        {
+          id: "prop_daire",
+          name: "Merkezi 3+1 Daire",
+          price: 1800000,
+          rent: 35000,
+        },
+        {
+          id: "prop_magaza",
+          name: "Çarşı Katı Dükkan",
+          price: 5000000,
+          rent: 110000,
+        },
+        {
+          id: "prop_plaza",
+          name: "Plaza Katı Ofis",
+          price: 22000000,
+          rent: 520000,
+        },
+      ];
+      const defaultState = () => ({
+        username: "",
+        email: "",
+        money: 250000,
+        bankDeposit: 0,
+        creditScore: 750,
+        loan: 0,
+        loanInstallment: 0,
+        level: 1,
+        age: 35,
+        xp: 0,
+        energy: 150,
+        maxEnergy: 150,
+        rep: 10,
+        lobbyPower: 10,
+        subsidiesActive: false,
+        heirName: null,
+        heirAge: 0,
+        businesses: {},
+        subsidiaries: {},
+        factories: {},
+        crypto: {},
+        hospitals: {},
+        hotels: {},
+        energies: {},
+        mines: {},
+        logistics: {},
+        vehicles: [],
+        properties: [],
+        staff: [],
+        activeJobs: {},
+        activeTenders: {},
+        activeConstructions: {},
+        portfolio: stockTickers.reduce((acc, s) => {
+          acc[s.id] = { shares: 0 };
+          return acc;
+        }, {}),
+        farm: { feed: 500, chicken: 5, sheep: 2, cow: 1, milk: 0, egg: 0 },
+        day: 1,
+        taxDebt: 0,
+        lastTick: now(),
+      });
+      let S = defaultState(),
+        active = "home",
+        tickHandle = null,
+        dayTimer = 0;
+      function toast(s) {
+        let t = $("toast");
+        t.textContent = s;
+        t.style.display = "block";
+        clearTimeout(t.timer);
+        t.timer = setTimeout(() => (t.style.display = "none"), 2500);
+      }
+      function fmtTime(sec) {
+        sec = Math.max(0, Math.ceil(sec));
+        return Math.floor(sec / 60) + ":" + String(sec % 60).padStart(2, "0");
+      }
+      function addXP(n) {
+        S.xp += n;
+        while (S.xp >= 120 + (S.level - 1) * 160) {
+          S.xp -= 120 + (S.level - 1) * 160;
+          S.level++;
+          S.rep += 25;
+          S.lobbyPower += 5;
+          S.maxEnergy = Math.min(450, 150 + (S.level - 1) * 25);
+          S.energy = S.maxEnergy;
+          toast("🎉 Seviye atladın! Maksimum enerji ve itibar yükseldi.");
+        }
+        updateHUD();
+      }
+      function changeMoney(amount, reason) {
+        if (!Number.isFinite(amount)) return false;
+        if (amount < 0 && S.money < -amount) {
+          toast("❌ Yetersiz bakiye!");
+          return false;
+        }
+        S.money = Math.max(0, S.money + amount);
+        updateHUD();
+        saveGame();
+        return true;
+      }
+      function updateHUD() {
+        $("money").textContent = money(S.money);
+        $("level").textContent = `Lv.${S.level} • ${S.age} Yaş`;
+        $("energy").textContent = Math.floor(S.energy) + "/" + S.maxEnergy;
+        $("lobbyPower").textContent = S.rep + " Puan";
+        $("heirStatus").textContent = S.heirName ? S.heirName : "Yok";
+      }
+      function openTab(id) {
+        active = id;
+        render();
+        if (active === "finance") drawStockCharts();
+        if (active === "leaderboard") fetchLeaderboard();
+      }
+      function shell(title, sub = "") {
+        return `<div class="section-title"><div><h2>${title}</h2><div class="small muted">${sub}</div></div><span class="tag">Gün ${S.day}</span></div>`;
+      }
+      function card(title, body, actions = "") {
+        return `<div class="card"><h3>${title}</h3>${body}${actions ? `<div class="actions">${actions}</div>` : ""}</div>`;
+      }
+      function render() {
+        $("tabs").innerHTML = tabs
+          .map(
+            ([id, label]) =>
+              `<button class="${active === id ? "active" : ""}" onclick="openTab('${id}')">${label}</button>`,
+          )
+          .join("");
+        let v = $("view");
+        switch (active) {
+          case "home":
+            v.innerHTML = homeView();
+            break;
+          case "leaderboard":
+            v.innerHTML = leaderboardView();
+            break;
+          case "jobs":
+            v.innerHTML = jobsView();
+            break;
+          case "business":
+            v.innerHTML = businessView();
+            break;
+          case "holding":
+            v.innerHTML = holdingView();
+            break;
+          case "industry":
+            v.innerHTML = industryView();
+            break;
+          case "crypto":
+            v.innerHTML = cryptoView();
+            break;
+          case "hospital":
+            v.innerHTML = hospitalView();
+            break;
+          case "tenders":
+            v.innerHTML = tendersView();
+            break;
+          case "finance":
+            v.innerHTML = financeView();
+            setTimeout(drawStockCharts, 50);
+            break;
+          case "bank":
+            v.innerHTML = bankView();
+            break;
+          case "taxOffice":
+            v.innerHTML = taxOfficeView();
+            break;
+          case "city":
+            v.innerHTML = cityView();
+            break;
+          case "hotels":
+            v.innerHTML = hotelsView();
+            break;
+          case "energy":
+            v.innerHTML = energyView();
+            break;
+          case "mining":
+            v.innerHTML = miningView();
+            break;
+          case "construction":
+            v.innerHTML = constructionView();
+            break;
+          case "logistics":
+            v.innerHTML = logisticsView();
+            break;
+          case "garage":
+            v.innerHTML = garageView();
+            break;
+          case "property":
+            v.innerHTML = propertyView();
+            break;
+          case "farm":
+            v.innerHTML = farmView();
+            break;
+          case "staff":
+            v.innerHTML = staffView();
+            break;
+          case "family":
+            v.innerHTML = familyView();
+            break;
+          case "settings":
+            v.innerHTML = settingsView();
+            break;
+          default:
+            v.innerHTML = homeView();
+        }
+        updateHUD();
+      }
+      function homeView() {
+        return (
+          shell(
+            "Şirket Yönetim Merkezi",
+            `Çevrim İçi Hesap: ${escapeHtml(S.email || "Oyuncu")}`,
+          ) +
+          `<div class="grid"> ${card("💰 Finansal Durum", `<div class="big green">${money(S.money)}</div><p>Banka Mevduatı: <b class="gold">${money(S.bankDeposit)}</b></p><p>Vergi Borcu: <b class="red">${money(S.taxDebt)}</b></p>`, `<button class="warning" onclick="openTab('taxOffice')">Vergi Dairesi</button>`)} ${card("🏛️ Lobi & İtibar", `<div class="big gold">${S.rep} Puan</div><p>Teşvik Durumu: <b>${S.subsidiesActive ? "Aktif (%30 İndirim)" : "Pasif"}</b></p>`, `<button class="warning" onclick="claimSubsidies()">Teşvik Al</button>`)} ${card("⚡ Enerji Yönetimi", `<div class="big blue">${Math.floor(S.energy)} / ${S.maxEnergy}</div><p>Enerji zamanla dolmaktadır.</p>`, `<button class="success" onclick="drinkTea()">☕ Çay İç (250 ₺)</button>`)} ${card("👶 Varis Paneli", S.heirName ? `<div class="big">${escapeHtml(S.heirName)} (${S.heirAge} Yaş)</div>` : `<div class="big muted">Varis Yok</div>`, `<button class="purple" onclick="openTab('family')">Varis Paneli</button>`)} </div>`
+        );
+      }
+      function leaderboardView() {
+        return (
+          shell(
+            "🏆 En Zengin Esnaflar",
+            "Tüm sunucudaki gerçek oyuncuların canlı sıralaması",
+          ) +
+          `<div class="list">` +
+          (leaderboardData.length
+            ? leaderboardData
+                .map(
+                  (item, index) =>
+                    ` <div class="item"> <div class="row"> <div> <h4>#${index + 1} - ${escapeHtml(item.username)}</h4> <p>Seviye: <b>${item.level}</b></p> </div> <b class="green" style="font-size:16px">${money(item.money)}</b> </div> </div> `,
+                )
+                .join("")
+            : `<p class="muted">${leaderboardError || "Sıralama verisi yükleniyor..."}</p>`) +
+          `</div>`
+        );
+      }
+      function jobsView() {
+        return (
+          shell(
+            "Kariyer ve Meslekler",
+            "İtibar ve Seviye kısıtlamalı meslek basamakları",
+          ) +
+          '<div class="list">' +
+          jobs
+            .map((j) => {
+              let activeJob = S.activeJobs[j.id];
+              let locked = S.level < j.level || S.rep < j.repReq;
+              return `<div class="item"> <div class="row"> <div> <h4>${j.name} ${locked ? "🔒" : ""}</h4> <p>Maaş: <b class="green">${money(j.pay)}</b> • Süre: ${fmtTime(j.time)} • Enerji: ${j.energy}</p> <p class="small muted">Gereksinim: Min Seviye ${j.level} • Min İtibar: ${j.repReq} Puan</p> </div> <button ${activeJob || locked ? "disabled" : ""} onclick="startJob('${j.id}')">${activeJob ? fmtTime(activeJob.rem) : locked ? "Kilitli" : "İşe Başla"}</button> </div> </div>`;
+            })
+            .join("") +
+          "</div>"
+        );
+      }
+      function businessView() {
+        return (
+          shell("Mağazalar ve Ticaret", "Pasif gelir kaynağı işletmeler") +
+          '<div class="list">' +
+          businessesCatalog
+            .map((b) => {
+              let owned = S.businesses[b.id];
+              let cost = S.subsidiesActive
+                ? Math.round(b.price * 0.7)
+                : b.price;
+              let locked = S.rep < b.reqRep;
+              return `<div class="item"><div class="row"><div><h4>${b.name} ${locked ? "🔒" : ""}</h4><p>Fiyat: ${money(cost)} • Günlük Gelir: <b class="green">${money(b.base)}</b> ${owned ? `• Seviye: ${owned.level}` : ""}</p><p class="small muted">Gereksinim: Min İtibar ${b.reqRep} Puan</p></div><div style="display:flex;gap:5px"><button ${locked ? "disabled" : ""} onclick="buyBusiness('${b.id}')">${owned ? "Geliştir" : locked ? "İtibar Yetersiz" : "Satın Al"}</button>${owned ? `<button class="danger" onclick="sellBusiness('${b.id}')">Sat</button>` : ""}</div></div></div>`;
+            })
+            .join("") +
+          "</div>"
+        );
+      }
+      function holdingView() {
+        return (
+          shell(
+            "Holding ve İştiraklar",
+            "Şirket satın alma ve temettü yönetimi",
+          ) +
+          '<div class="list">' +
+          holdingSubsidiaries
+            .map((sub) => {
+              let owned = S.subsidiaries[sub.id];
+              let cost = S.subsidiesActive
+                ? Math.round(sub.cost * 0.7)
+                : sub.cost;
+              return `<div class="item"><div class="row"><div><h4>${sub.name}</h4><p>Maliyet: ${money(cost)} • Günlük Temettü: <b class="green">${money(sub.dividend)}</b></p></div><button ${owned ? "disabled" : ""} onclick="buySubsidiary('${sub.id}')">${owned ? "İştirak Edildi" : "Satın Al"}</button></div></div>`;
+            })
+            .join("") +
+          "</div>"
+        );
+      }
+      function industryView() {
+        return (
+          shell(
+            "🏭 Fabrika ve Üretim Hatları",
+            "Hammadde işleme ve toptan satış",
+          ) +
+          '<div class="list">' +
+          factoriesCatalog
+            .map((f) => {
+              let owned = S.factories[f.id];
+              let cost = S.subsidiesActive ? Math.round(f.cost * 0.7) : f.cost;
+              return `<div class="item"><div class="row"><div><h4>${f.name}</h4><p>Maliyet: ${money(cost)} • Günlük Üretim: <b class="green">${money(f.dailyProd)}</b></p></div><button onclick="buyFactory('${f.id}')">${owned ? "Kapasiteyi Artır" : "Fabrika Kur"}</button></div></div>`;
+            })
+            .join("") +
+          "</div>"
+        );
+      }
+      function cryptoView() {
+        return (
+          shell(
+            "🪙 Kripto Madencilik Çiftliği",
+            "Yüksek riskli dijital varlık tesisleri",
+          ) +
+          '<div class="list">' +
+          cryptoCatalog
+            .map((cr) => {
+              let owned = S.crypto[cr.id];
+              let cost = S.subsidiesActive
+                ? Math.round(cr.cost * 0.7)
+                : cr.cost;
+              return `<div class="item"><div class="row"><div><h4>${cr.name}</h4><p>Maliyet: ${money(cost)} • Günlük Getiri: <b class="green">${money(cr.daily)}</b></p></div><button ${owned ? "disabled" : ""} onclick="buyCrypto('${cr.id}')">${owned ? "Aktif Tesis" : "Kurulum Yap"}</button></div></div>`;
+            })
+            .join("") +
+          "</div>"
+        );
+      }
+      function hospitalView() {
+        return (
+          shell(
+            "🏥 Sağlık & Özel Hastane Yatırımları",
+            "Prestijli sağlık sektörü iştirakleri",
+          ) +
+          '<div class="list">' +
+          hospitalCatalog
+            .map((hs) => {
+              let owned = S.hospitals[hs.id];
+              let cost = S.subsidiesActive
+                ? Math.round(hs.cost * 0.7)
+                : hs.cost;
+              return `<div class="item"><div class="row"><div><h4>${hs.name}</h4><p>Maliyet: ${money(cost)} • Günlük Gelir: <b class="green">${money(hs.daily)}</b></p></div><button ${owned ? "disabled" : ""} onclick="buyHospital('${hs.id}')">${owned ? "İşletiliyor" : "Satın Al"}</button></div></div>`;
+            })
+            .join("") +
+          "</div>"
+        );
+      }
+      function tendersView() {
+        return (
+          shell("Belediye ve Kamu İhaleleri", "Kârlı kamu projeleri") +
+          '<div class="list">' +
+          tendersList
+            .map((t) => {
+              let activeTender = S.activeTenders[t.id];
+              return `<div class="item"><div class="row"><div><h4>${t.name}</h4><p>Maliyet: ${money(t.cost)} • Ödül: <b class="green">${money(t.reward)}</b> • Süre: ${fmtTime(t.time)}</p></div><button ${activeTender ? "disabled" : ""} onclick="startTender('${t.id}')">${activeTender ? fmtTime(activeTender.rem) : "İhaleye Gir"}</button></div></div>`;
+            })
+            .join("") +
+          "</div>"
+        );
+      }
+      function financeView() {
+        return (
+          shell("Finans & Piyasalar", "Borsa, Döviz ve Altın Alım-Satım") +
+          '<div class="list">' +
+          stockTickers
+            .map((s) => {
+              let shares = S.portfolio[s.id].shares;
+              return `<div class="item"><div class="row"><div><h4>📈 ${s.id} - ${s.name}</h4><p>Fiyat: <b class="gold">${money(s.price)}</b> • Elinizdeki: ${shares} Lot</p></div><div style="display:flex;gap:5px"><button class="success" onclick="buyStock('${s.id}', 1)">1 Al</button><button class="success" onclick="buyStock('${s.id}', 10)">10 Al</button><button class="danger" onclick="sellStock('${s.id}', 1)">1 Sat</button><button class="danger" onclick="sellStock('${s.id}', 10)">10 Sat</button></div></div><canvas id="chart_${s.id}"></canvas></div>`;
+            })
+            .join("") +
+          "</div>"
+        );
+      }
+      function bankView() {
+        return (
+          shell(
+            "Bankacılık Sistemleri",
+            "Vadeli Mevduat, Kredi ve Para Çekme/Yatırma",
+          ) +
+          `<div class="grid"> ${card("🏦 Vadeli Mevduat", `<div class="big green">${money(S.bankDeposit)}</div><p>Günlük %0.5 faiz getirisi aktif.</p>`, `<button class="success" onclick="depositMoney()">100k Yatır</button><button class="warning" onclick="withdrawMoney()">100k Çek</button>`)} ${card("💳 Kredi & Geri Ödeme", `<div class="big gold">${S.creditScore} Puan</div><p>Kredi Borcu: <b class="red">${money(S.loan)}</b></p>`, `<button class="warning" onclick="takeLoan()">500k Kredi Çek</button><button class="success" onclick="payLoanInstallment()">Taksit Öde</button><button class="danger" onclick="payFullLoan()">Borcu Kapat</button>`)} </div>`
+        );
+      }
+      function taxOfficeView() {
+        return (
+          shell("Vergi Dairesi", "Vergi Yapılandırma ve Ödemeleri") +
+          `<div class="notice"><h3>🏛️ Güncel Vergi Borcu</h3><div class="big red">${money(S.taxDebt)}</div><p>Devlete olan borçlarınızı düzenli ödemek itibarınızı ve kredi notunuzu korur.</p></div> <div style="display:flex;gap:10px"><button class="success" onclick="payTax()">Borcun Tamamını Öde</button><button class="warning" onclick="restructureTax()">Borcu Yapılandır (%10 İndirim)</button></div>`
+        );
+      }
+      function cityView() {
+        return (
+          shell(
+            "🏙️ Şehir & Yöresel Lezzetler AVM",
+            "Türkiye'nin 81 ilinden lezzetler ve enerji depoları",
+          ) +
+          '<div class="list">' +
+          localDishes
+            .map(
+              (d) =>
+                ` <div class="item"> <div class="row"> <div> <h4>${d.name}</h4> <p>${d.desc}</p> <p>Fiyat: <b class="gold">${money(d.cost)}</b> • Enerji Kazancı: <b class="green">+${d.energy} Puan</b></p> </div> <button class="success" onclick="eatDish('${d.id}')">Sipariş Ver</button> </div> </div> `,
+            )
+            .join("") +
+          "</div>"
+        );
+      }
+      function hotelsView() {
+        return (
+          shell(
+            "🏨 Otel ve Turizm Yatırımları",
+            "Oda kapasitesi ve günlük gelirler",
+          ) +
+          '<div class="list">' +
+          hotelsCatalog
+            .map((h) => {
+              let owned = S.hotels[h.id];
+              let cost = S.subsidiesActive ? Math.round(h.cost * 0.7) : h.cost;
+              return `<div class="item"><div class="row"><div><h4>${h.name}</h4><p>Maliyet: ${money(cost)} • Günlük Gelir: <b class="green">${money(h.daily)}</b> (Doluluk: %85)</p></div><button ${owned ? "disabled" : ""} onclick="buyHotel('${h.id}')">${owned ? "İşletiliyor" : "Satın Al"}</button></div></div>`;
+            })
+            .join("") +
+          "</div>"
+        );
+      }
+      function energyView() {
+        return (
+          shell(
+            "⚡ Yenilenebilir Enerji Santralleri",
+            "Güneş ve Rüzgar enerji üretim gelirleri",
+          ) +
+          '<div class="list">' +
+          energyCatalog
+            .map((e) => {
+              let owned = S.energies[e.id];
+              let cost = S.subsidiesActive ? Math.round(e.cost * 0.7) : e.cost;
+              return `<div class="item"><div class="row"><div><h4>${e.name}</h4><p>Maliyet: ${money(cost)} • Günlük Üretim Geliri: <b class="green">${money(e.daily)}</b></p></div><button ${owned ? "disabled" : ""} onclick="buyEnergy('${e.id}')">${owned ? "Aktif Santral" : "Kurulum Yap"}</button></div></div>`;
+            })
+            .join("") +
+          "</div>"
+        );
+      }
+      function miningView() {
+        return (
+          shell(
+            "⛏️ Maden ve Değerli Metal Sahaları",
+            "Altın, bakır ve demir maden ocakları",
+          ) +
+          '<div class="list">' +
+          miningCatalog
+            .map((m) => {
+              let owned = S.mines[m.id];
+              let cost = S.subsidiesActive ? Math.round(m.cost * 0.7) : m.cost;
+              return `<div class="item"><div class="row"><div><h4>${m.name}</h4><p>Ruhsat Maliyeti: ${money(cost)} • Günlük Cevher Geliri: <b class="green">${money(m.daily)}</b></p></div><button ${owned ? "disabled" : ""} onclick="buyMine('${m.id}')">${owned ? "İşletme Aktif" : "Ruhsat Al"}</button></div></div>`;
+            })
+            .join("") +
+          "</div>"
+        );
+      }
+      function constructionView() {
+        return (
+          shell(
+            "🚜 İnşaat & Müteahhitlik Projeleri",
+            "Konut ve plaza inşaatları",
+          ) +
+          '<div class="list">' +
+          constructionCatalog
+            .map((c) => {
+              let activeC = S.activeConstructions[c.id];
+              return `<div class="item"><div class="row"><div><h4>${c.name}</h4><p>Maliyet: ${money(c.cost)} • Ödül: <b class="green">${money(c.reward)}</b> • Süre: ${fmtTime(c.time)}</p></div><button ${activeC ? "disabled" : ""} onclick="startConstruction('${c.id}')">${activeC ? fmtTime(activeC.rem) : "Projeye Başla"}</button></div></div>`;
+            })
+            .join("") +
+          "</div>"
+        );
+      }
+      function logisticsView() {
+        return (
+          shell(
+            "📦 Lojistik ve Nakliye Filosu",
+            "Kurye ve tır filosu yönetimi",
+          ) +
+          '<div class="list">' +
+          logisticsCatalog
+            .map((l) => {
+              let owned = S.logistics[l.id];
+              return `<div class="item"><div class="row"><div><h4>${l.name}</h4><p>Filo Maliyeti: ${money(l.cost)} • Günlük Nakliye Kazancı: <b class="green">${money(l.daily)}</b></p></div><button ${owned ? "disabled" : ""} onclick="buyLogistics('${l.id}')">${owned ? "Filo Aktif" : "Filo Kur"}</button></div></div>`;
+            })
+            .join("") +
+          "</div>"
+        );
+      }
+      function garageView() {
+        return (
+          shell(
+            "🚗 Garaj & Araç Galerisi",
+            "Lüks otomobil alım satımı ve kiralama",
+          ) +
+          `<div class="notice"><h3>Garajım (${S.vehicles.length} Araç)</h3></div>` +
+          '<div class="list">' +
+          (S.vehicles.length
+            ? S.vehicles
+                .map(
+                  (v, i) =>
+                    ` <div class="item"> <div class="row"> <div><h4>${v.name}</h4><p>Değer: ${money(v.price)} • Günlük Kira: <b class="green">${money(v.rent)}</b></p></div> <button class="danger" onclick="sellVehicle(${i})">Aracı Sat</button> </div> </div> `,
+                )
+                .join("")
+            : '<p class="muted">Garajınızda henüz araç yok.</p>') +
+          `</div><div class="section-title" style="margin-top:20px"><h2>Galeriden Araç Satın Al</h2></div><div class="list">` +
+          garageCatalog
+            .map(
+              (g) =>
+                ` <div class="item"><div class="row"><div><h4>${g.name}</h4><p>Fiyat: ${money(g.price)} • Günlük Kira: <b class="green">${money(g.rent)}</b></p></div><button class="success" onclick="buyVehicle('${g.id}')">Satın Al</button></div></div> `,
+            )
+            .join("") +
+          "</div>"
+        );
+      }
+      function propertyView() {
+        return (
+          shell(
+            "🏘️ Emlak & Gayrimenkul Yatırımları",
+            "Daire ve dükkan kiralama",
+          ) +
+          `<div class="notice"><h3>Portföyüm (${S.properties.length} Mülk)</h3></div>` +
+          '<div class="list">' +
+          (S.properties.length
+            ? S.properties
+                .map(
+                  (p, i) =>
+                    ` <div class="item"> <div class="row"> <div><h4>${p.name}</h4><p>Değer: ${money(p.price)} • Günlük Kira: <b class="green">${money(p.rent)}</b></p></div> <button class="danger" onclick="sellProperty(${i})">Mülkünü Sat</button> </div> </div> `,
+                )
+                .join("")
+            : '<p class="muted">Portföyünüzde mülk bulunmuyor.</p>') +
+          `</div><div class="section-title" style="margin-top:20px"><h2>Emlak Piyasası</h2></div><div class="list">` +
+          propertyCatalog
+            .map(
+              (p) =>
+                ` <div class="item"><div class="row"><div><h4>${p.name}</h4><p>Bedel: ${money(p.price)} • Günlük Kira: <b class="green">${money(p.rent)}</b></p></div><button class="success" onclick="buyProperty('${p.id}')">Satın Al</button></div></div> `,
+            )
+            .join("") +
+          "</div>"
+        );
+      }
+      function farmView() {
+        return (
+          shell(
+            "🌾 Çiftlik ve Tarım Entegrasyonu",
+            "Hayvancılık, süt ve yumurta üretimi",
+          ) +
+          `<div class="notice"> <h3>Çiftlik Durumu</h3> <p>Tavuk: <b>${S.farm.chicken}</b> | Koyun: <b>${S.farm.sheep}</b> | İnek: <b>${S.farm.cow}</b></p> <p>Yem Stoku: <b>${S.farm.feed} kg</b> | Biriken Süt: <b>${S.farm.milk} Lt</b> | Biriken Yumurta: <b>${S.farm.egg} Adet</b></p> </div> <div class="actions"> <button class="success" onclick="buyFarmAnimal('chicken')">Tavuk Al (5.000 ₺)</button> <button class="success" onclick="buyFarmAnimal('sheep')">Koyun Al (25.000 ₺)</button> <button class="success" onclick="buyFarmAnimal('cow')">İnek Al (90.000 ₺)</button> <button class="warning" onclick="harvestFarm()">Ürünleri Hasat Et & Sat</button> </div>`
+        );
+      }
+      function staffView() {
+        return (
+          shell(
+            "👥 Şirket Personeli ve Yönetim",
+            "Müdür, Uzman ve çalışan kadrosu",
+          ) +
+          `<div class="notice"><h3>Mevcut Personel Sayısı: ${S.staff.length}</h3><p>Çalışanlar şirket verimliliğini artırır (Günlük toplam maaş: ${money(S.staff.length * 15000)}).</p></div> <div class="actions"> <button class="success" onclick="hireStaff('Müdür')">Müdür İşe Al (25.000 ₺ peşin)</button> <button class="success" onclick="hireStaff('Uzman')">Uzman Al (10.000 ₺ peşin)</button> ${S.staff.length > 0 ? `<button class="danger" onclick="fireStaff()">Personel Çıkar</button>` : ""} </div>`
+        );
+      }
+      function familyView() {
+        return (
+          shell("Varis & Miras Hukuku", "Kuşaklar arası imparatorluk devri") +
+          (S.heirName
+            ? `<div class="notice"><h3>👶 Varis: ${escapeHtml(S.heirName)} (${S.heirAge} Yaş)</h3><button class="success" onclick="transferLegacy()">Yönetimi Devret</button></div>`
+            : `<button class="purple" onclick="adoptChild()">Varis Sahibi Ol (1.000.000 ₺)</button>`)
+        );
+      }
+      function settingsView() {
+        return (
+          shell("Ayarlar & Çevrim İçi Oturum", "Güvenli bulut yönetimi") +
+          `<div class="actions"><button class="danger" onclick="logout()">Çıkış Yap</button></div>`
+        );
+      }
+      function drawStockCharts() {
+        stockTickers.forEach((s) => {
+          let c = $("chart_" + s.id);
+          if (!c) return;
+          let ctx = c.getContext("2d");
+          c.width = c.offsetWidth;
+          c.height = 120;
+          ctx.clearRect(0, 0, c.width, c.height);
+          ctx.beginPath();
+          ctx.strokeStyle = "#28d69a";
+          ctx.lineWidth = 2;
+          s.history.forEach((v, i) => {
+            let x = i * (c.width / (s.history.length - 1));
+            let y = c.height - (v / 3500) * c.height;
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+          });
+          ctx.stroke();
+        });
+      }
+      function gameTick() {
+        let ct = now(),
+          elapsed = (ct - S.lastTick) / 1000;
+        if (elapsed < 1) return;
+        S.lastTick = ct;
+        if (S.energy < S.maxEnergy) {
+          S.energy = Math.min(S.maxEnergy, S.energy + elapsed * 0.4);
+        }
+        for (let id in S.activeJobs) {
+          let j = S.activeJobs[id];
+          j.rem -= elapsed;
+          if (j.rem <= 0) {
+            changeMoney(j.pay, "Maaş");
+            addXP(j.xp);
+            toast(`✅ İş tamamlandı! +${money(j.pay)}`);
+            delete S.activeJobs[id];
+          }
+        }
+        for (let id in S.activeTenders) {
+          let t = S.activeTenders[id];
+          t.rem -= elapsed;
+          if (t.rem <= 0) {
+            changeMoney(t.reward, "İhale Ödülü");
+            toast(`🏛️ İhale tamamlandı! +${money(t.reward)}`);
+            delete S.activeTenders[id];
+          }
+        }
+        for (let id in S.activeConstructions) {
+          let c = S.activeConstructions[id];
+          c.rem -= elapsed;
+          let cat = constructionCatalog.find((x) => x.id === id);
+          if (c.rem <= 0) {
+            changeMoney(cat.reward, "İnşaat Ödülü");
+            toast(`🚜 ${cat.name} tamamlandı! +${money(cat.reward)}`);
+            delete S.activeConstructions[id];
+          }
+        }
+        dayTimer += elapsed;
+        if (dayTimer >= 30) {
+          dayTimer = 0;
+          S.day++;
+          if (S.day % 365 === 0) S.age++;
+          if (S.heirName) S.heirAge++;
+          let busIncome = Object.keys(S.businesses).reduce((acc, bId) => {
+            let cat = businessesCatalog.find((x) => x.id === bId);
+            return acc + (cat ? cat.base * S.businesses[bId].level : 0);
+          }, 0);
+          let subIncome = Object.keys(S.subsidiaries).reduce((acc, subId) => {
+            let sub = holdingSubsidiaries.find((x) => x.id === subId);
+            return acc + (sub ? sub.dividend : 0);
+          }, 0);
+          let facIncome = Object.keys(S.factories).reduce((acc, fId) => {
+            let f = factoriesCatalog.find((x) => x.id === fId);
+            return acc + (f ? f.dailyProd : 0);
+          }, 0);
+          let cryptoIncome = Object.keys(S.crypto).reduce((acc, crId) => {
+            let cr = cryptoCatalog.find((x) => x.id === crId);
+            return acc + (cr ? cr.daily : 0);
+          }, 0);
+          let hospitalIncome = Object.keys(S.hospitals).reduce((acc, hsId) => {
+            let hs = hospitalCatalog.find((x) => x.id === hsId);
+            return acc + (hs ? hs.daily : 0);
+          }, 0);
+          let hotelIncome = Object.keys(S.hotels).reduce((acc, hId) => {
+            let h = hotelsCatalog.find((x) => x.id === hId);
+            return acc + (h ? h.daily : 0);
+          }, 0);
+          let energyIncome = Object.keys(S.energies).reduce((acc, eId) => {
+            let en = energyCatalog.find((x) => x.id === eId);
+            return acc + (en ? en.daily : 0);
+          }, 0);
+          let mineIncome = Object.keys(S.mines).reduce((acc, mId) => {
+            let m = miningCatalog.find((x) => x.id === mId);
+            return acc + (m ? m.daily : 0);
+          }, 0);
+          let logIncome = Object.keys(S.logistics).reduce((acc, lId) => {
+            let l = logisticsCatalog.find((x) => x.id === lId);
+            return acc + (l ? l.daily : 0);
+          }, 0);
+          let propIncome = S.properties.reduce((acc, p) => acc + p.rent, 0);
+          let vehIncome = S.vehicles.reduce((acc, v) => acc + v.rent, 0);
+          let totalIncome =
+            busIncome +
+            subIncome +
+            facIncome +
+            cryptoIncome +
+            hospitalIncome +
+            hotelIncome +
+            energyIncome +
+            mineIncome +
+            logIncome +
+            propIncome +
+            vehIncome;
+          let staffExpense = S.staff.length * 15000;
+          let netTotal = totalIncome - staffExpense;
+          if (netTotal > 0) changeMoney(netTotal, "Net Günlük Gelir");
+          if (S.bankDeposit > 0) {
+            S.bankDeposit += Math.round(S.bankDeposit * 0.005);
+          }
+          S.taxDebt += Math.round(totalIncome * 0.12);
+          S.farm.milk += S.farm.cow * 15;
+          S.farm.egg += S.farm.chicken * 10;
+          stockTickers.forEach((s) => {
+            let delta = (Math.random() - 0.48) * s.volatility * s.price;
+            s.price = Math.max(10, Math.round(s.price + delta));
+            s.history.push(s.price);
+            if (s.history.length > 10) s.history.shift();
+          });
+          if (Math.random() < 0.25) {
+            const events = [
+              {
+                msg: "📈 Borsa rallisi gerçekleşti! Tüm hisseler değer kazandı.",
+                action: () =>
+                  stockTickers.forEach(
+                    (s) => (s.price = Math.round(s.price * 1.15)),
+                  ),
+              },
+              {
+                msg: "🏛️ Hükümetten KOBİ teşviki açıklandı: +100.000 ₺ hibe!",
+                action: () => changeMoney(100000, "Teşvik"),
+              },
+              {
+                msg: "⚠️ Ekonomik dalgalanma! Piyasalarda geçici durgunluk yaşandı.",
+              },
+            ];
+            let ev = events[Math.floor(Math.random() * events.length)];
+            if (ev.action) ev.action();
+            toast(`📢 Piyasalar: ${ev.msg}`);
+          }
+          toast(`🌅 Gün ${S.day} başladı. Net gelir: ${money(netTotal)}`);
+          saveGame();
+        }
+        updateHUD();
+        render();
+      }
+      function startJob(id) {
+        let j = jobs.find((x) => x.id === id);
+        if (S.level < j.level || S.rep < j.repReq) {
+          toast(`❌ Seviye ${j.level} ve ${j.repReq} İtibar gerekli!`);
+          return;
+        }
+        if (S.energy < j.energy) {
+          toast("❌ Enerji yetersiz!");
+          return;
+        }
+        if (S.activeJobs[id]) return;
+        S.energy -= j.energy;
+        S.activeJobs[id] = { pay: j.pay, xp: j.xp, rem: j.time };
+        toast(`💼 İş başladı!`);
+        updateHUD();
+        render();
+      }
+      function buyBusiness(id) {
+        let b = businessesCatalog.find((x) => x.id === id);
+        if (S.rep < b.reqRep) {
+          toast(`❌ Bu işletme için ${b.reqRep} itibar puanı gerekiyor!`);
+          return;
+        }
+        let cost = S.subsidiesActive ? Math.round(b.price * 0.7) : b.price;
+        if (S.businesses[id]) {
+          if (changeMoney(-Math.round(cost * 0.5), "Geliştirme"))
+            S.businesses[id].level++;
+        } else {
+          if (changeMoney(-cost, "Satın Alma")) S.businesses[id] = { level: 1 };
+        }
+        saveGame(true);
+        render();
+      }
+      function sellBusiness(id) {
+        if (S.businesses[id]) {
+          let b = businessesCatalog.find((x) => x.id === id);
+          changeMoney(Math.round(b.price * 0.6), "İşletme Satışı");
+          delete S.businesses[id];
+          toast("İşletme satıldı.");
+          saveGame(true);
+          render();
+        }
+      }
+      function buySubsidiary(id) {
+        let sub = holdingSubsidiaries.find((x) => x.id === id);
+        let cost = S.subsidiesActive ? Math.round(sub.cost * 0.7) : sub.cost;
+        if (changeMoney(-cost, "İştirak Satın Alma")) {
+          S.subsidiaries[id] = true;
+          toast(`🏢 ${sub.name} holding bünyesine katıldı!`);
+          saveGame(true);
+          render();
+        }
+      }
+      function buyFactory(id) {
+        let f = factoriesCatalog.find((x) => x.id === id);
+        let cost = S.subsidiesActive ? Math.round(f.cost * 0.7) : f.cost;
+        if (changeMoney(-cost, "Fabrika Yatırımı")) {
+          S.factories[id] = true;
+          toast(`🏭 ${f.name} faaliyete geçti!`);
+          saveGame(true);
+          render();
+        }
+      }
+      function buyCrypto(id) {
+        let cr = cryptoCatalog.find((x) => x.id === id);
+        let cost = S.subsidiesActive ? Math.round(cr.cost * 0.7) : cr.cost;
+        if (changeMoney(-cost, "Kripto Yatırımı")) {
+          S.crypto[id] = true;
+          toast(`🪙 ${cr.name} kuruldu!`);
+          saveGame(true);
+          render();
+        }
+      }
+      function buyHospital(id) {
+        let hs = hospitalCatalog.find((x) => x.id === id);
+        let cost = S.subsidiesActive ? Math.round(hs.cost * 0.7) : hs.cost;
+        if (changeMoney(-cost, "Hastane Yatırımı")) {
+          S.hospitals[id] = true;
+          toast(`🏥 ${hs.name} hizmete girdi!`);
+          saveGame(true);
+          render();
+        }
+      }
+      function buyHotel(id) {
+        let h = hotelsCatalog.find((x) => x.id === id);
+        let cost = S.subsidiesActive ? Math.round(h.cost * 0.7) : h.cost;
+        if (changeMoney(-cost, "Otel Yatırımı")) {
+          S.hotels[id] = true;
+          toast(`🏨 ${h.name} satın alındı!`);
+          saveGame(true);
+          render();
+        }
+      }
+      function buyEnergy(id) {
+        let e = energyCatalog.find((x) => x.id === id);
+        let cost = S.subsidiesActive ? Math.round(e.cost * 0.7) : e.cost;
+        if (changeMoney(-cost, "Enerji Yatırımı")) {
+          S.energies[id] = true;
+          toast(`⚡ ${e.name} kuruldu!`);
+          saveGame(true);
+          render();
+        }
+      }
+      function buyMine(id) {
+        let m = miningCatalog.find((x) => x.id === id);
+        let cost = S.subsidiesActive ? Math.round(m.cost * 0.7) : m.cost;
+        if (changeMoney(-cost, "Maden Ruhsatı")) {
+          S.mines[id] = true;
+          toast(`⛏️ ${m.name} ruhsatı alındı!`);
+          saveGame(true);
+          render();
+        }
+      }
+      function startConstruction(id) {
+        let c = constructionCatalog.find((x) => x.id === id);
+        if (S.activeConstructions[id]) return;
+        if (changeMoney(-c.cost, "İnşaat Maliyeti")) {
+          S.activeConstructions[id] = { rem: c.time };
+          toast("🚜 İnşaat projesi başlatıldı!");
+          saveGame(true);
+          render();
+        }
+      }
+      function buyLogistics(id) {
+        let l = logisticsCatalog.find((x) => x.id === id);
+        if (changeMoney(-l.cost, "Lojistik Yatırımı")) {
+          S.logistics[id] = true;
+          toast(`📦 ${l.name} kuruldu!`);
+          saveGame(true);
+          render();
+        }
+      }
+      function buyVehicle(id) {
+        let v = garageCatalog.find((x) => x.id === id);
+        if (changeMoney(-v.price, "Araç Alımı")) {
+          S.vehicles.push(v);
+          toast(`🚗 ${v.name} garaja eklendi!`);
+          saveGame(true);
+          render();
+        }
+      }
+      function sellVehicle(index) {
+        if (S.vehicles[index]) {
+          let v = S.vehicles[index];
+          changeMoney(Math.round(v.price * 0.75), "Araç Satışı");
+          S.vehicles.splice(index, 1);
+          toast("Araç galeriye satıldı.");
+          saveGame(true);
+          render();
+        }
+      }
+      function buyProperty(id) {
+        let p = propertyCatalog.find((x) => x.id === id);
+        if (changeMoney(-p.price, "Emlak Yatırımı")) {
+          S.properties.push(p);
+          toast(`🏘️ ${p.name} portföye eklendi!`);
+          saveGame(true);
+          render();
+        }
+      }
+      function sellProperty(index) {
+        if (S.properties[index]) {
+          let p = S.properties[index];
+          changeMoney(Math.round(p.price * 0.8), "Gayrimenkul Satışı");
+          S.properties.splice(index, 1);
+          toast("Mülk satıldı.");
+          saveGame(true);
+          render();
+        }
+      }
+      function buyFarmAnimal(type) {
+        let costs = { chicken: 5000, sheep: 25000, cow: 90000 };
+        if (changeMoney(-costs[type], "Hayvan Alımı")) {
+          S.farm[type]++;
+          toast("Hayvan çiftliğe eklendi!");
+          saveGame(true);
+          render();
+        }
+      }
+      function harvestFarm() {
+        let rev = S.farm.milk * 25 + S.farm.egg * 10;
+        changeMoney(rev, "Tarım ve Süt Satışı");
+        S.farm.milk = 0;
+        S.farm.egg = 0;
+        toast(`🌾 Ürünler satıldı: +${money(rev)}`);
+        saveGame(true);
+        render();
+      }
+      function hireStaff(role) {
+        if (changeMoney(-25000, "Personel İşe Alım")) {
+          S.staff.push({ role });
+          toast("Yeni personel işe alındı.");
+          saveGame(true);
+          render();
+        }
+      }
+      function fireStaff() {
+        if (S.staff.length > 0) {
+          S.staff.pop();
+          toast("Personel işten çıkarıldı.");
+          saveGame(true);
+          render();
+        }
+      }
+      function eatDish(id) {
+        let d = localDishes.find((x) => x.id === id);
+        if (changeMoney(-d.cost, "Yöresel Lezzet")) {
+          S.energy = Math.min(S.maxEnergy, S.energy + d.energy);
+          updateHUD();
+          toast(`😋 ${d.name} yendi! Enerji +${d.energy} arttı.`);
+        }
+      }
+      function startTender(id) {
+        let t = tendersList.find((x) => x.id === id);
+        if (S.activeTenders[id]) return;
+        if (changeMoney(-t.cost, "İhale")) {
+          S.activeTenders[id] = { reward: t.reward, rem: t.time };
+          toast("🏛️ İhale alındı!");
+          saveGame(true);
+          render();
+        }
+      }
+      function buyStock(id, count) {
+        let s = stockTickers.find((x) => x.id === id);
+        let totalCost = s.price * count;
+        if (changeMoney(-totalCost, "Hisse Alımı")) {
+          S.portfolio[id].shares += count;
+          toast(`${count} Lot ${id} alındı.`);
+          saveGame(true);
+          render();
+        }
+      }
+      function sellStock(id, count) {
+        let s = stockTickers.find((x) => x.id === id);
+        if (S.portfolio[id].shares >= count) {
+          S.portfolio[id].shares -= count;
+          changeMoney(s.price * count, "Hisse Satışı");
+          toast(`${count} Lot ${id} satıldı.`);
+          saveGame(true);
+          render();
+        } else {
+          toast("❌ Yeterli lotunuz yok!");
+        }
+      }
+      function depositMoney() {
+        if (changeMoney(-100000, "Mevduat Yatırma")) {
+          S.bankDeposit += 100000;
+          saveGame(true);
+          render();
+        }
+      }
+      function withdrawMoney() {
+        if (S.bankDeposit >= 100000) {
+          S.bankDeposit -= 100000;
+          changeMoney(100000, "Mevduat Çekme");
+          saveGame(true);
+          render();
+        } else {
+          toast("❌ Bankada yeterli mevduat yok!");
+        }
+      }
+      function takeLoan() {
+        if (S.loan === 0) {
+          S.loan = 500000;
+          S.loanInstallment = 100000;
+          changeMoney(500000, "Kredi");
+          toast("500.000 ₺ banka kredisi çekildi.");
+          saveGame(true);
+          render();
+        } else {
+          toast("Zaten aktif krediniz var.");
+        }
+      }
+      function payLoanInstallment() {
+        if (S.loan > 0) {
+          let payAmt = Math.min(S.loan, S.loanInstallment);
+          if (changeMoney(-payAmt, "Kredi Taksiti")) {
+            S.loan -= payAmt;
+            toast("Kredi taksiti ödendi.");
+            saveGame(true);
+            render();
+          }
+        } else {
+          toast("Kredi borcunuz yok.");
+        }
+      }
+      function payFullLoan() {
+        if (S.loan > 0) {
+          if (changeMoney(-S.loan, "Kredi Kapatma")) {
+            S.loan = 0;
+            S.loanInstallment = 0;
+            toast("Kredi borcunun tamamı kapatıldı!");
+            saveGame(true);
+            render();
+          }
+        } else {
+          toast("Kredi borcunuz yok.");
+        }
+      }
+      function payTax() {
+        if (S.taxDebt <= 0) {
+          toast("Vergi borcunuz yok.");
+          return;
+        }
+        if (changeMoney(-S.taxDebt, "Vergi Ödemesi")) {
+          S.taxDebt = 0;
+          toast("Vergi borcu ödendi!");
+          saveGame(true);
+          render();
+        }
+      }
+      function restructureTax() {
+        if (S.taxDebt > 0) {
+          S.taxDebt = Math.round(S.taxDebt * 0.9);
+          toast("Vergi borcu %10 indirimle yapılandırıldı.");
+          saveGame(true);
+          render();
+        } else {
+          toast("Vergi borcunuz yok.");
+        }
+      }
+      function claimSubsidies() {
+        if (!S.subsidiesActive) {
+          S.subsidiesActive = true;
+          changeMoney(500000, "Teşvik");
+          toast("Devlet teşviki alındı! (%30 indirim aktif)");
+          saveGame(true);
+          render();
+        }
+      }
+      function adoptChild() {
+        if (changeMoney(-1000000, "Varis")) {
+          S.heirName = S.username + " Jr.";
+          S.heirAge = 0;
+          toast("Varis dünyaya geldi!");
+          saveGame(true);
+          render();
+        }
+      }
+      function transferLegacy() {
+        if (!S.heirName) return;
+        S.username = S.heirName;
+        S.age = S.heirAge < 25 ? 25 : S.heirAge;
+        S.heirName = null;
+        S.heirAge = 0;
+        saveGame(true);
+        toast("👑 Holding varise başarıyla devredildi!");
+        location.reload();
+      }
+      function drinkTea() {
+        if (changeMoney(-250, "Çay")) {
+          S.energy = Math.min(S.maxEnergy, S.energy + 35);
+          updateHUD();
+          toast("☕ Çay içildi, enerji tazelendi!");
+        }
+      }
+      function startTicker() {
+        if (tickHandle) clearInterval(tickHandle);
+        tickHandle = setInterval(gameTick, 1000);
+      }
+    </script>
+  </body>
+</html>
