@@ -542,6 +542,125 @@
         max-height: 190px;
         filter: drop-shadow(0 13px 10px #0005);
       }
+      .garage-section {
+        margin-top: 20px;
+      }
+      .vehicle-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 285px), 1fr));
+        gap: 14px;
+      }
+      .vehicle-card {
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: linear-gradient(155deg, #26352b, #18211c 78%);
+        box-shadow: 0 8px 20px #0003;
+        transition:
+          transform 180ms ease,
+          border-color 180ms ease,
+          box-shadow 180ms ease;
+      }
+      .vehicle-card:hover {
+        transform: translateY(-3px);
+        border-color: #83916f;
+        box-shadow: 0 14px 28px #0005;
+      }
+      .vehicle-photo {
+        position: relative;
+        overflow: hidden;
+        aspect-ratio: 16 / 10;
+        background: #27342b;
+      }
+      .vehicle-photo img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 280ms ease;
+      }
+      .vehicle-card:hover .vehicle-photo img {
+        transform: scale(1.035);
+      }
+      .vehicle-class {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        padding: 6px 9px;
+        border: 1px solid #ffffff50;
+        border-radius: 5px;
+        background: #111815d9;
+        color: #fff7e8;
+        font-size: 10px;
+        font-weight: 850;
+        text-transform: uppercase;
+      }
+      .vehicle-info {
+        padding: 14px;
+      }
+      .vehicle-info h3 {
+        margin: 0;
+        font-size: 15px;
+      }
+      .vehicle-price {
+        display: block;
+        margin-top: 9px;
+        color: var(--gold);
+        font-size: 21px;
+        font-weight: 900;
+      }
+      .vehicle-meta {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        margin: 10px 0 12px;
+        padding-top: 9px;
+        border-top: 1px solid #ffffff19;
+        color: var(--muted);
+        font-size: 11px;
+      }
+      .vehicle-meta strong {
+        color: var(--green);
+        font-size: 12px;
+      }
+      .vehicle-buy {
+        width: 100%;
+      }
+      .vehicle-owned {
+        display: grid;
+        grid-template-columns: minmax(180px, 0.8fr) minmax(0, 1.2fr);
+        margin-bottom: 12px;
+      }
+      .vehicle-owned .vehicle-photo {
+        height: 100%;
+        min-height: 145px;
+        aspect-ratio: auto;
+      }
+      .vehicle-owned .vehicle-info {
+        align-self: center;
+      }
+      .garage-empty {
+        padding: 22px;
+        border: 1px dashed #65735d;
+        border-radius: 8px;
+        color: var(--muted);
+        text-align: center;
+      }
+      .garage-empty span {
+        display: block;
+        margin-bottom: 7px;
+        color: var(--gold);
+        font-size: 27px;
+      }
+      .garage-empty h3 {
+        margin: 0 0 5px;
+        color: var(--text);
+        font-size: 15px;
+      }
+      .garage-empty p {
+        margin: 0;
+        font-size: 12px;
+      }
       @media (max-width: 760px) {
         header {
           padding: 10px 12px;
@@ -581,6 +700,13 @@
           max-height: 135px;
           justify-self: center;
           margin-top: -6px;
+        }
+        .vehicle-owned {
+          grid-template-columns: 1fr;
+        }
+        .vehicle-owned .vehicle-photo {
+          aspect-ratio: 16 / 10;
+          min-height: 0;
         }
       }
       @media (prefers-reduced-motion: reduce) {
@@ -1461,13 +1587,30 @@
         {
           id: "car_sedan",
           name: "Şehir Sedan Otomobil",
+          type: "Sedan",
+          image:
+            "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=960&q=85",
+          imageAlt: "Siyah lüks sedan şehir yolunda",
           price: 450000,
           rent: 8500,
         },
-        { id: "car_suv", name: "Lüks SUV Araç", price: 2100000, rent: 42000 },
+        {
+          id: "car_suv",
+          name: "Lüks SUV Araç",
+          type: "SUV",
+          image:
+            "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=960&q=85",
+          imageAlt: "Beyaz SUV dağlık arazide",
+          price: 2100000,
+          rent: 42000,
+        },
         {
           id: "car_sport",
           name: "Spor Yarış Arabası",
+          type: "Spor",
+          image:
+            "https://images.unsplash.com/photo-1525609004556-c46c7d6cf023?auto=format&fit=crop&w=960&q=85",
+          imageAlt: "Turuncu spor otomobil orman yolunda",
           price: 7500000,
           rent: 160000,
         },
@@ -2004,29 +2147,55 @@
         );
       }
       function garageView() {
+        const ownedVehicles = S.vehicles.length
+          ? S.vehicles
+              .map((vehicle, index) => {
+                const catalogVehicle = garageCatalog.find(
+                  (item) => item.id === vehicle.id,
+                );
+                const image = catalogVehicle?.image || garageCatalog[0].image;
+                const imageAlt =
+                  catalogVehicle?.imageAlt || "Garajınızdaki araç";
+                const vehicleName =
+                  vehicle.name || catalogVehicle?.name || "Araç";
+                return `<article class="vehicle-card vehicle-owned">
+                  <div class="vehicle-photo"><img src="${image}" alt="${escapeHtml(imageAlt)}" loading="lazy" decoding="async"><span class="vehicle-class">${catalogVehicle?.type || "Araç"}</span></div>
+                  <div class="vehicle-info">
+                    <h3>${escapeHtml(vehicleName)}</h3>
+                    <span class="vehicle-price">${money(vehicle.price)}</span>
+                    <div class="vehicle-meta"><span>Günlük kira</span><strong>${money(vehicle.rent)}</strong></div>
+                    <button class="danger vehicle-buy" onclick="sellVehicle(${index})">Aracı Sat · %75</button>
+                  </div>
+                </article>`;
+              })
+              .join("")
+          : `<div class="garage-empty"><span>🚘</span><h3>Garaj henüz boş</h3><p>İlk aracını aşağıdaki galeriden seç.</p></div>`;
         return (
           shell(
-            "🚗 Garaj & Araç Galerisi",
-            "Lüks otomobil alım satımı ve kiralama",
+            "🚗 Araç Galerisi",
+            "Gerçek araç fotoğrafları · satın al ve kiraya ver",
           ) +
-          `<div class="notice"><h3>Garajım (${S.vehicles.length} Araç)</h3></div>` +
-          '<div class="list">' +
-          (S.vehicles.length
-            ? S.vehicles
-                .map(
-                  (v, i) =>
-                    ` <div class="item"> <div class="row"> <div><h4>${v.name}</h4><p>Değer: ${money(v.price)} • Günlük Kira: <b class="green">${money(v.rent)}</b></p></div> <button class="danger" onclick="sellVehicle(${i})">Aracı Sat</button> </div> </div> `,
-                )
-                .join("")
-            : '<p class="muted">Garajınızda henüz araç yok.</p>') +
-          `</div><div class="section-title" style="margin-top:20px"><h2>Galeriden Araç Satın Al</h2></div><div class="list">` +
-          garageCatalog
-            .map(
-              (g) =>
-                ` <div class="item"><div class="row"><div><h4>${g.name}</h4><p>Fiyat: ${money(g.price)} • Günlük Kira: <b class="green">${money(g.rent)}</b></p></div><button class="success" onclick="buyVehicle('${g.id}')">Satın Al</button></div></div> `,
-            )
-            .join("") +
-          "</div>"
+          `<section class="garage-section">
+            <div class="section-title"><div><h2>Garajım</h2><div class="small muted">${S.vehicles.length} araç</div></div><span class="tag">Gün ${S.day}</span></div>
+            ${ownedVehicles}
+          </section>
+          <section class="garage-section">
+            <div class="section-title"><div><h2>Galerideki Araçlar</h2><div class="small muted">Her araç günlük kira getirir</div></div><span class="tag">${garageCatalog.length} ilan</span></div>
+            <div class="vehicle-grid">${garageCatalog
+              .map(
+                (vehicle) => `<article class="vehicle-card">
+                  <div class="vehicle-photo"><img src="${vehicle.image}" alt="${escapeHtml(vehicle.imageAlt)}" loading="lazy" decoding="async"><span class="vehicle-class">${vehicle.type}</span></div>
+                  <div class="vehicle-info">
+                    <h3>${escapeHtml(vehicle.name)}</h3>
+                    <span class="vehicle-price">${money(vehicle.price)}</span>
+                    <div class="vehicle-meta"><span>Günlük kira</span><strong>${money(vehicle.rent)}</strong></div>
+                    <button class="success vehicle-buy" onclick="buyVehicle('${vehicle.id}')">🚗 Aracı Satın Al</button>
+                  </div>
+                </article>`,
+              )
+              .join("")}</div>
+            <p class="small muted">Fotoğraflar Unsplash üzerinden yüklenir.</p>
+          </section>`
         );
       }
       function propertyView() {
