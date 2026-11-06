@@ -526,6 +526,7 @@
       let cloudUser = null;
       let cloudSaveTimer = null;
       let leaderboardData = [];
+      let leaderboardError = "";
       function initSupabase() {
         if (window.supabase) {
           supabaseClient = window.supabase.createClient(
@@ -720,10 +721,9 @@
           cloudUser = null;
           if (supabaseClient)
             await supabaseClient.auth.signOut().catch(console.error);
-          const reason = String(err?.message || "Bilinmeyen sunucu hatası").slice(
-            0,
-            180,
-          );
+          const reason = String(
+            err?.message || "Bilinmeyen sunucu hatası",
+          ).slice(0, 180);
           toast(`⚠️ Sunucu verisi okunamadı: ${reason}`);
         }
       }

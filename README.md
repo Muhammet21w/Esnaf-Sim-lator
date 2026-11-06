@@ -18,6 +18,21 @@ alter table public.game_saves
 alter table public.game_saves
   add column if not exists updated_at timestamptz not null default now();
 
+do $$
+begin
+  if exists (
+    select 1
+    from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'game_saves'
+      and column_name = 'game_state'
+  ) then
+    execute 'update public.game_saves set save_data = game_state::jsonb where game_state is not null and save_data = ''{}''::jsonb';
+    execute 'alter table public.game_saves alter column game_state drop not null';
+  end if;
+end
+$$;
+
 alter table public.game_saves enable row level security;
 revoke all on public.game_saves from public, anon;
 grant select, insert, update on public.game_saves to authenticated;
