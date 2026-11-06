@@ -720,7 +720,11 @@
           cloudUser = null;
           if (supabaseClient)
             await supabaseClient.auth.signOut().catch(console.error);
-          toast("⚠️ Sunucu verisi okunamadı.");
+          const reason = String(err?.message || "Bilinmeyen sunucu hatası").slice(
+            0,
+            180,
+          );
+          toast(`⚠️ Sunucu verisi okunamadı: ${reason}`);
         }
       }
       async function saveGame(show = false) {
