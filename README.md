@@ -69,6 +69,7 @@ grant insert (user_id, username, money, level, updated_at)
   on public.leaderboard to authenticated;
 grant update (username, money, level, updated_at)
   on public.leaderboard to authenticated;
+grant update on public.leaderboard to authenticated;
 
 drop policy if exists "leaderboard_read_public" on public.leaderboard;
 create policy "leaderboard_read_public"
